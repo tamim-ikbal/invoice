@@ -9,6 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -33,7 +34,7 @@ const form = useForm({
     title: props.invoice.title,
     client_id: props.invoice.client?.id ?? null,
     status: props.invoice.status,
-    date: props.invoice.date,
+    date: props.invoice.date ?? '',
 });
 
 function save() {
@@ -104,7 +105,11 @@ function save() {
 
                 <div class="grid gap-2">
                     <Label for="date">Date</Label>
-                    <Input id="date" v-model="form.date" type="date" />
+                    <DatePicker
+                        id="date"
+                        v-model="form.date"
+                        placeholder="Pick a date"
+                    />
                     <InputError :message="form.errors.date" />
                 </div>
             </div>

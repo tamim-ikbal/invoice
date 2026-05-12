@@ -9,10 +9,11 @@ use App\DTOs\Admin\ClientData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreClientRequest;
 use App\Http\Requests\Admin\UpdateClientRequest;
+use App\Http\Resources\InvoiceResource;
 use App\Models\Client;
-use App\Services\ClientCreateService;
-use App\Services\ClientEditService;
+use App\Models\Invoice;
 use App\Services\ClientIndexService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -28,14 +29,6 @@ class ClientController extends Controller
     }
 
     /**
-     * Show the form for creating a new client.
-     */
-    public function create(ClientCreateService $service): Response
-    {
-        return Inertia::render('admin/Client/Create', $service->handle());
-    }
-
-    /**
      * Store a newly created client.
      */
     public function store(StoreClientRequest $request, StoreClientAction $action): RedirectResponse
@@ -48,14 +41,6 @@ class ClientController extends Controller
     }
 
     /**
-     * Show the form for editing the specified client.
-     */
-    public function edit(Client $client, ClientEditService $service): Response
-    {
-        return Inertia::render('admin/Client/Edit', $service->handle($client));
-    }
-
-    /**
      * Update the specified client.
      */
     public function update(UpdateClientRequest $request, Client $client, UpdateClientAction $action): RedirectResponse
@@ -64,7 +49,7 @@ class ClientController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Client updated.')]);
 
-        return to_route('admin.clients.edit', $client);
+        return to_route('admin.clients.index');
     }
 
     /**
@@ -77,5 +62,18 @@ class ClientController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Client deleted.')]);
 
         return to_route('admin.clients.index');
+    }
+
+    /**
+     * Return paginated invoices for the specified client.
+     */
+    public function invoices(Client $client): JsonResponse
+    {
+        $invoices = Invoice::where('client_id', $client->id)
+            ->with('client')
+            ->latest()
+            ->paginate();
+
+        return InvoiceResource::collection($invoices)->response();
     }
 }

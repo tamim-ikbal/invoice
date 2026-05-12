@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->id();
+            $table->id()->startingValue(1028);
             $table->string('uid')->unique();
+            $table->string('invoice_no')->nullable()->unique();
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
             $table->string('status')->default('draft');

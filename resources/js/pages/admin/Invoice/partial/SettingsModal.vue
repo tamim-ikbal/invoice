@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 import { Settings } from 'lucide-vue-next';
+import { ref, watch } from 'vue';
 import InvoiceController from '@/actions/App/Http/Controllers/Admin/InvoiceController';
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -23,22 +25,34 @@ type Props = {
 
 const props = defineProps<Props>();
 
+const open = ref(false);
+
 const form = useForm({
     show_quantity: props.invoice.settings.show_quantity,
 });
+
+watch(
+    () => props.invoice.settings,
+    (settings) => {
+        form.show_quantity = settings.show_quantity;
+    },
+);
 
 function submit() {
     form.patch(
         InvoiceController.updateSettings.url({ invoice: props.invoice.id }),
         {
             preserveScroll: true,
+            onSuccess: () => {
+                open.value = false;
+            },
         },
     );
 }
 </script>
 
 <template>
-    <Dialog>
+    <Dialog v-model:open="open">
         <DialogTrigger as-child>
             <Button variant="outline" size="sm">
                 <Settings class="mr-2 h-4 w-4" />
@@ -65,6 +79,7 @@ function submit() {
                             @update:checked="form.show_quantity = $event"
                         />
                     </div>
+                    <InputError :message="form.errors.show_quantity" />
                 </div>
 
                 <DialogFooter class="gap-2">

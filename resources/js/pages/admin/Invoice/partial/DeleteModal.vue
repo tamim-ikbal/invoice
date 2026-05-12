@@ -10,7 +10,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 
 type Props = {
@@ -18,24 +17,23 @@ type Props = {
 };
 
 const props = defineProps<Props>();
+
+const open = defineModel<boolean>('open', { default: false });
 </script>
 
 <template>
-    <Dialog>
-        <DialogTrigger as-child>
-            <Button
-                variant="ghost"
-                class="w-full justify-start text-destructive"
-            >
-                Delete
-            </Button>
-        </DialogTrigger>
+    <Dialog v-model:open="open">
         <DialogContent>
             <Form
                 v-bind="
                     InvoiceController.destroy.form({ invoice: props.invoiceId })
                 "
-                :options="{ preserveScroll: true }"
+                :options="{
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        open = false;
+                    },
+                }"
                 class="space-y-6"
                 v-slot="{ processing }"
             >

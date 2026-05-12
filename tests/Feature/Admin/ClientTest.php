@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Client;
+use App\Models\Invoice;
 use App\Models\User;
 
 beforeEach(function () {
@@ -34,14 +35,18 @@ test('client index displays clients', function () {
     );
 });
 
-test('client create page can be rendered', function () {
+test('client index page returns paginated data', function () {
+    Client::factory()->count(3)->create();
+
     $response = $this
         ->actingAs($this->user)
-        ->get(route('admin.clients.create'));
+        ->get(route('admin.clients.index'));
 
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
-        ->component('admin/Client/Create')
+        ->component('admin/Client/Index')
+        ->has('clients.data', 3)
+        ->has('clients.meta')
     );
 });
 
@@ -85,18 +90,20 @@ test('client creation requires unique email', function () {
     $response->assertSessionHasErrors('email');
 });
 
-test('client edit page can be rendered', function () {
+test('client invoices endpoint returns paginated invoices', function () {
     $client = Client::factory()->create();
+    Invoice::factory()->for($client)->count(2)->create();
 
     $response = $this
         ->actingAs($this->user)
-        ->get(route('admin.clients.edit', $client));
+        ->getJson(route('admin.clients.invoices', $client));
 
     $response->assertOk();
-    $response->assertInertia(fn ($page) => $page
-        ->component('admin/Client/Edit')
-        ->has('client')
-    );
+    $response->assertJsonCount(2, 'data');
+    $response->assertJsonStructure([
+        'data' => [['id', 'title', 'status']],
+        'meta' => ['current_page', 'last_page'],
+    ]);
 });
 
 test('client can be updated', function () {
@@ -109,7 +116,7 @@ test('client can be updated', function () {
             'email' => 'updated@example.com',
         ]);
 
-    $response->assertRedirect(route('admin.clients.edit', $client));
+    $response->assertRedirect(route('admin.clients.index'));
 
     $client->refresh();
 
@@ -128,7 +135,7 @@ test('client can keep same email on update', function () {
         ]);
 
     $response->assertSessionHasNoErrors();
-    $response->assertRedirect(route('admin.clients.edit', $client));
+    $response->assertRedirect(route('admin.clients.index'));
 });
 
 test('client can be deleted', function () {

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['uid', 'client_id', 'title', 'status', 'date', 'settings'])]
+#[Fillable(['uid', 'client_id', 'title', 'status', 'date', 'settings','invoice_no'])]
 class Invoice extends Model
 {
     /** @use HasFactory<InvoiceFactory> */
@@ -30,6 +30,11 @@ class Invoice extends Model
                 config('settings.invoice'),
                 $invoice->settings ?? [],
             );
+        });
+
+        static::created(function (Invoice $invoice) {
+            $invoice->invoice_no = str($invoice->id)->padLeft(6, '0')->prepend('INV')->toString();
+            $invoice->save();
         });
     }
 

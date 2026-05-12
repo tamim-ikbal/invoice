@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { MoreHorizontal } from 'lucide-vue-next';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Pencil, Trash2 } from 'lucide-vue-next';
+import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
+import TablePagination from '@/components/TablePagination.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Spinner } from '@/components/ui/spinner';
 import {
     Table,
     TableBody,
@@ -22,16 +18,12 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { index as invoicesIndex, edit } from '@/routes/admin/invoices';
-import type { Invoice } from '@/types';
+import type { Invoice, Paginated } from '@/types';
 import CreateModal from './partial/CreateModal.vue';
 import DeleteModal from './partial/DeleteModal.vue';
 
 type Props = {
-    invoices: {
-        data: Invoice[];
-        links: Record<string, string | null>[];
-        meta?: Record<string, unknown>;
-    };
+    invoices: Paginated<Invoice>;
 };
 
 defineProps<Props>();
@@ -47,10 +39,30 @@ defineOptions({
     },
 });
 
+const navigatingId = ref<number | null>(null);
+const deletingInvoice = ref<Invoice | null>(null);
+const deleteOpen = ref(false);
+
+function navigateEdit(invoice: Invoice) {
+    navigatingId.value = invoice.id;
+    router.visit(edit.url(invoice.id), {
+        onFinish: () => {
+            navigatingId.value = null;
+        },
+    });
+}
+
+function openDelete(invoice: Invoice) {
+    deletingInvoice.value = invoice;
+    deleteOpen.value = true;
+}
+
 function statusVariant(status: string) {
     switch (status) {
         case 'draft':
             return 'secondary';
+        case 'in_progress':
+            return 'outline';
         case 'sent':
             return 'outline';
         case 'paid':
@@ -80,7 +92,7 @@ function statusVariant(status: string) {
                             <TableHead>Status</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead class="text-right">Total</TableHead>
-                            <TableHead class="w-[70px]" />
+                            <TableHead class="w-[100px]" />
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -116,37 +128,28 @@ function statusVariant(status: string) {
                                     {{ invoice.total_amount }}
                                 </TableCell>
                                 <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger as-child>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                class="h-8 w-8"
-                                            >
-                                                <MoreHorizontal
-                                                    class="h-4 w-4"
-                                                />
-                                                <span class="sr-only"
-                                                    >Open menu</span
-                                                >
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem as-child>
-                                                <Link
-                                                    :href="
-                                                        edit.url(invoice.id)
-                                                    "
-                                                >
-                                                    Edit
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DeleteModal
-                                                :invoice-id="invoice.id"
-                                            />
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <div class="flex items-center justify-end gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="h-8 w-8"
+                                            :disabled="navigatingId === invoice.id"
+                                            @click="navigateEdit(invoice)"
+                                        >
+                                            <Spinner v-if="navigatingId === invoice.id" />
+                                            <Pencil v-else class="h-4 w-4" />
+                                            <span class="sr-only">Edit</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="h-8 w-8 text-destructive hover:text-destructive"
+                                            @click="openDelete(invoice)"
+                                        >
+                                            <Trash2 class="h-4 w-4" />
+                                            <span class="sr-only">Delete</span>
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         </template>
@@ -160,5 +163,13 @@ function statusVariant(status: string) {
                 </Table>
             </CardContent>
         </Card>
+
+        <TablePagination :links="invoices.meta.links" />
     </div>
+
+    <DeleteModal
+        v-if="deletingInvoice"
+        v-model:open="deleteOpen"
+        :invoice-id="deletingInvoice.id"
+    />
 </template>

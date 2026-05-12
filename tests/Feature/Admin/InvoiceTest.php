@@ -269,7 +269,7 @@ test('invoice gets a uid on creation', function () {
     expect($invoice->uid)->not->toBeEmpty();
 });
 
-test('invoice settings can be updated', function () {
+test('invoice settings can be updated with boolean true', function () {
     $invoice = Invoice::factory()->create();
 
     $response = $this
@@ -285,7 +285,121 @@ test('invoice settings can be updated', function () {
     expect($invoice->settings['show_quantity'])->toBeTrue();
 });
 
-test('invoice settings validation works', function () {
+test('invoice settings can be updated with boolean false', function () {
+    $invoice = Invoice::factory()->create([
+        'settings' => ['show_quantity' => true],
+    ]);
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => false,
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeFalse();
+});
+
+test('invoice settings can be updated with integer 1', function () {
+    $invoice = Invoice::factory()->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => 1,
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeTrue();
+});
+
+test('invoice settings can be updated with integer 0', function () {
+    $invoice = Invoice::factory()->create([
+        'settings' => ['show_quantity' => true],
+    ]);
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => 0,
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeFalse();
+});
+
+test('invoice settings can be updated with string values', function () {
+    $invoice = Invoice::factory()->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => '1',
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeTrue();
+});
+
+test('invoice settings can be toggled back and forth', function () {
+    $invoice = Invoice::factory()->create();
+
+    expect($invoice->settings['show_quantity'])->toBeFalse();
+
+    $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => true,
+        ]);
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeTrue();
+
+    $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => false,
+        ]);
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeFalse();
+});
+
+test('invoice settings are returned on edit page after update', function () {
+    $invoice = Invoice::factory()->create();
+
+    $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => true,
+        ]);
+
+    $response = $this
+        ->actingAs($this->user)
+        ->get(route('admin.invoices.edit', $invoice));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('admin/Invoice/Edit')
+        ->where('invoice.settings.show_quantity', true)
+    );
+});
+
+test('invoice settings validation rejects invalid values', function () {
     $invoice = Invoice::factory()->create();
 
     $response = $this
@@ -295,6 +409,33 @@ test('invoice settings validation works', function () {
         ]);
 
     $response->assertSessionHasErrors('show_quantity');
+});
+
+test('invoice settings validation requires show_quantity', function () {
+    $invoice = Invoice::factory()->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), []);
+
+    $response->assertSessionHasErrors('show_quantity');
+});
+
+test('invoice can be set to in_progress status', function () {
+    $invoice = Invoice::factory()->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->put(route('admin.invoices.update', $invoice), [
+            'title' => $invoice->title,
+            'status' => InvoiceStatusEnum::IN_PROGRESS->value,
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $invoice->refresh();
+
+    expect($invoice->status)->toBe(InvoiceStatusEnum::IN_PROGRESS);
 });
 
 test('new invoice has default settings from config', function () {

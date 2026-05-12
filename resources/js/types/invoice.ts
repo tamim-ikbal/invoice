@@ -1,4 +1,4 @@
-export type InvoiceStatus = 'draft' | 'sent' | 'paid';
+export type InvoiceStatus = 'draft' | 'in_progress' | 'sent' | 'paid';
 export type PaymentStatus = 'paid' | 'unpaid';
 export type PaymentMethod = 'payoneer';
 
@@ -52,4 +52,30 @@ export type InvoiceEdit = Invoice & {
 export type StatusOption = {
     value: string;
     label: string;
+};
+
+export type PaginationLink = {
+    url: string | null;
+    label: string;
+    active: boolean;
+};
+
+export type Paginated<T> = {
+    data: T[];
+    links: {
+        first: string | null;
+        last: string | null;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        current_page: number;
+        from: number | null;
+        last_page: number;
+        links: PaginationLink[];
+        path: string;
+        per_page: number;
+        to: number | null;
+        total: number;
+    };
 };

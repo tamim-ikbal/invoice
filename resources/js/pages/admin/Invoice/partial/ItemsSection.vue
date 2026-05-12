@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { Form, useForm } from '@inertiajs/vue3';
-import { MoreHorizontal, Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
 import InvoiceItemController from '@/actions/App/Http/Controllers/Admin/InvoiceItemController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -40,6 +37,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import type { InvoiceEdit } from '@/types';
+import { Form, useForm } from '@inertiajs/vue3';
+import { MoreHorizontal, Plus } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -144,6 +144,7 @@ function submitDelete() {
                             :options="{ preserveScroll: true }"
                             class="space-y-6"
                             v-slot="{ errors, processing }"
+                            resetOnSuccess
                         >
                             <DialogHeader>
                                 <DialogTitle>Add Item</DialogTitle>

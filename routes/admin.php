@@ -15,5 +15,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         ->only(['store', 'update', 'destroy'])
         ->parameters(['invoice-items' => 'invoiceItem']);
     Route::resource('invoices.payments', PaymentController::class)->only(['store', 'update', 'destroy']);
-    Route::resource('clients', ClientController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('clients', ClientController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('clients/{client}/invoices', [ClientController::class, 'invoices'])->name('clients.invoices');
 });

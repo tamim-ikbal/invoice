@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { MoreHorizontal, Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 import PaymentController from '@/actions/App/Http/Controllers/Admin/PaymentController';
@@ -13,6 +13,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
     Dialog,
     DialogClose,
@@ -57,10 +58,36 @@ type Props = {
 
 const props = defineProps<Props>();
 
+function today() {
+    return new Date().toISOString().split('T')[0];
+}
+
+const addOpen = ref(false);
 const editingPayment = ref<Payment | null>(null);
 const editOpen = ref(false);
 const deletePayment = ref<Payment | null>(null);
 const deleteOpen = ref(false);
+
+const addForm = useForm({
+    amount: '',
+    date: today(),
+    status: 'unpaid',
+    payment_method: 'payoneer',
+});
+
+function submitAdd() {
+    addForm.post(
+        PaymentController.store.url({ invoice: props.invoice.id }),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                addOpen.value = false;
+                addForm.reset();
+                addForm.date = today();
+            },
+        },
+    );
+}
 
 const editForm = useForm({
     amount: '',
@@ -123,9 +150,6 @@ function submitDelete() {
     );
 }
 
-function today() {
-    return new Date().toISOString().split('T')[0];
-}
 </script>
 
 <template>
@@ -133,7 +157,7 @@ function today() {
         <CardHeader>
             <CardTitle>Payments</CardTitle>
             <CardAction>
-                <Dialog>
+                <Dialog v-model:open="addOpen">
                     <DialogTrigger as-child>
                         <Button variant="outline" size="sm">
                             <Plus class="mr-1 h-4 w-4" />
@@ -141,19 +165,7 @@ function today() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <Form
-                            v-bind="
-                                PaymentController.store.form(props.invoice.id)
-                            "
-                            :data="{
-                                date: today(),
-                                status: 'unpaid',
-                                payment_method: 'payoneer',
-                            }"
-                            :options="{ preserveScroll: true }"
-                            class="space-y-6"
-                            v-slot="{ errors, processing }"
-                        >
+                        <form class="space-y-6" @submit.prevent="submitAdd">
                             <DialogHeader>
                                 <DialogTitle>Add Payment</DialogTitle>
                                 <DialogDescription>
@@ -166,54 +178,64 @@ function today() {
                                     <Label for="payment-amount">Amount</Label>
                                     <Input
                                         id="payment-amount"
-                                        name="amount"
+                                        v-model="addForm.amount"
                                         type="number"
                                         step="0.01"
                                         placeholder="0.00"
                                         required
                                     />
-                                    <InputError :message="errors.amount" />
+                                    <InputError
+                                        :message="addForm.errors.amount"
+                                    />
                                 </div>
 
                                 <div class="grid gap-2">
                                     <Label for="payment-date">Date</Label>
-                                    <Input
+                                    <DatePicker
                                         id="payment-date"
-                                        name="date"
-                                        type="date"
-                                        required
+                                        v-model="addForm.date"
                                     />
-                                    <InputError :message="errors.date" />
+                                    <InputError
+                                        :message="addForm.errors.date"
+                                    />
                                 </div>
 
                                 <div class="grid gap-2">
                                     <Label for="payment-status">Status</Label>
-                                    <select
-                                        id="payment-status"
-                                        name="status"
-                                        class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                    >
-                                        <option value="paid">Paid</option>
-                                        <option value="unpaid" selected>
-                                            Unpaid
-                                        </option>
-                                    </select>
-                                    <InputError :message="errors.status" />
+                                    <Select v-model="addForm.status">
+                                        <SelectTrigger id="payment-status">
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="paid">
+                                                Paid
+                                            </SelectItem>
+                                            <SelectItem value="unpaid">
+                                                Unpaid
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError
+                                        :message="addForm.errors.status"
+                                    />
                                 </div>
 
                                 <div class="grid gap-2">
                                     <Label for="payment-method">Method</Label>
-                                    <select
-                                        id="payment-method"
-                                        name="payment_method"
-                                        class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                    >
-                                        <option value="payoneer" selected>
-                                            Payoneer
-                                        </option>
-                                    </select>
+                                    <Select v-model="addForm.payment_method">
+                                        <SelectTrigger id="payment-method">
+                                            <SelectValue placeholder="Method" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="payoneer">
+                                                Payoneer
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <InputError
-                                        :message="errors.payment_method"
+                                        :message="
+                                            addForm.errors.payment_method
+                                        "
                                     />
                                 </div>
                             </div>
@@ -222,11 +244,14 @@ function today() {
                                 <DialogClose as-child>
                                     <Button variant="secondary">Cancel</Button>
                                 </DialogClose>
-                                <Button type="submit" :disabled="processing">
+                                <Button
+                                    type="submit"
+                                    :disabled="addForm.processing"
+                                >
                                     Add Payment
                                 </Button>
                             </DialogFooter>
-                        </Form>
+                        </form>
                     </DialogContent>
                 </Dialog>
             </CardAction>
@@ -331,11 +356,9 @@ function today() {
 
                     <div class="grid gap-2">
                         <Label for="edit-payment-date">Date</Label>
-                        <Input
+                        <DatePicker
                             id="edit-payment-date"
                             v-model="editForm.date"
-                            type="date"
-                            required
                         />
                         <InputError :message="editForm.errors.date" />
                     </div>

@@ -10,7 +10,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 
 type Props = {
@@ -18,13 +17,12 @@ type Props = {
 };
 
 const props = defineProps<Props>();
+
+const open = defineModel<boolean>('open', { default: false });
 </script>
 
 <template>
-    <Dialog>
-        <DialogTrigger as-child>
-            <Button variant="destructive">Delete client</Button>
-        </DialogTrigger>
+    <Dialog v-model:open="open">
         <DialogContent>
             <Form
                 v-bind="
@@ -34,15 +32,17 @@ const props = defineProps<Props>();
                 "
                 :options="{
                     preserveScroll: true,
+                    onSuccess: () => {
+                        open = false;
+                    },
                 }"
                 class="space-y-6"
-                v-slot="{ processing, reset, clearErrors }"
+                v-slot="{ processing }"
             >
                 <DialogHeader class="space-y-3">
-                    <DialogTitle
-                        >Are you sure you want to delete this
-                        client?</DialogTitle
-                    >
+                    <DialogTitle>
+                        Are you sure you want to delete this client?
+                    </DialogTitle>
                     <DialogDescription>
                         This will also remove the client from any associated
                         invoices. This action cannot be undone.
@@ -51,19 +51,8 @@ const props = defineProps<Props>();
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button
-                            variant="secondary"
-                            @click="
-                                () => {
-                                    clearErrors();
-                                    reset();
-                                }
-                            "
-                        >
-                            Cancel
-                        </Button>
+                        <Button variant="secondary">Cancel</Button>
                     </DialogClose>
-
                     <Button
                         type="submit"
                         variant="destructive"

@@ -18,6 +18,7 @@ class PublicInvoiceResource extends JsonResource
         return [
             'uid' => $this->uid,
             'title' => $this->title,
+            'invoice_no' => $this->invoice_no,
             'date' => Helper::dateFormat($this->date),
             'status' => $this->status,
             'client' => $this->whenLoaded('client', fn () => [

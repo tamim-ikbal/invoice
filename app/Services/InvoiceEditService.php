@@ -19,10 +19,10 @@ class InvoiceEditService
         $invoice->load(['items', 'payments', 'client']);
 
         return [
-            'invoice' => InvoiceEditResource::make($invoice)->resolve(),
+            'invoice' => InvoiceEditResource::make($invoice),
             'clients' => ClientResource::collection(Client::all()),
             'statuses' => array_map(
-                fn ($case) => ['value' => $case->value, 'label' => ucfirst($case->value)],
+                fn ($case) => ['value' => $case->value, 'label' => $case->label()],
                 InvoiceStatusEnum::cases()
             ),
         ];
