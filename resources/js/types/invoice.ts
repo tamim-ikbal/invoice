@@ -10,18 +10,23 @@ export type Client = {
     created_at: string;
 };
 
-export type Task = {
+export type InvoiceItem = {
     id?: number;
     name: string;
-    amount: number;
+    quantity: number;
+    amount: string;
 };
 
 export type Payment = {
     id?: number;
-    amount: number;
+    amount: string;
     date: string;
     status: PaymentStatus;
     payment_method: PaymentMethod;
+};
+
+export type InvoiceSettings = {
+    show_quantity: boolean;
 };
 
 export type Invoice = {
@@ -29,18 +34,19 @@ export type Invoice = {
     uid: string;
     title: string;
     status: InvoiceStatus;
-    date: string;
+    date: string | null;
     client: { id: number; name: string } | null;
-    total_amount: number;
-    paid_amount: number;
-    due_amount: number;
+    total_amount: string;
+    paid_amount: string;
+    due_amount: string;
     public_url: string;
     created_at: string;
 };
 
 export type InvoiceEdit = Invoice & {
-    tasks: Task[];
+    items: InvoiceItem[];
     payments: Payment[];
+    settings: InvoiceSettings;
 };
 
 export type StatusOption = {

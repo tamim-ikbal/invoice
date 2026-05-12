@@ -2,16 +2,14 @@
 
 namespace App\Actions\Admin;
 
+use App\DTOs\Admin\UpdateInvoiceData;
 use App\Models\Invoice;
 
 class UpdateInvoiceAction
 {
-    /**
-     * @param  array{title: string, client_id: int|null, status: string, date: string}  $data
-     */
-    public function handle(Invoice $invoice, array $data): Invoice
+    public function handle(Invoice $invoice, UpdateInvoiceData $data): Invoice
     {
-        $invoice->update($data);
+        $invoice->update($data->toArray());
 
         return $invoice;
     }

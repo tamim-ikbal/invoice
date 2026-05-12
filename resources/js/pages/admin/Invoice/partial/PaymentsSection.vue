@@ -63,7 +63,7 @@ const deletePayment = ref<Payment | null>(null);
 const deleteOpen = ref(false);
 
 const editForm = useForm({
-    amount: 0,
+    amount: '',
     date: '',
     status: 'unpaid',
     payment_method: 'payoneer',
@@ -248,7 +248,7 @@ function today() {
                         :key="payment.id"
                     >
                         <TableCell>
-                            ${{ Number(payment.amount).toFixed(2) }}
+                            ${{ payment.amount }}
                         </TableCell>
                         <TableCell>{{ payment.date }}</TableCell>
                         <TableCell>
@@ -389,12 +389,9 @@ function today() {
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Delete payment?</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete this ${{
-                            deletePayment
-                                ? Number(deletePayment.amount).toFixed(2)
-                                : ''
-                        }}
-                        payment? This action cannot be undone.
+                        Are you sure you want to delete this
+                        ${{ deletePayment?.amount ?? '' }} payment? This action
+                        cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
 

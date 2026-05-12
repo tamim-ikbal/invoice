@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['uid', 'client_id', 'title', 'status', 'date'])]
+#[Fillable(['uid', 'client_id', 'title', 'status', 'date', 'settings'])]
 class Invoice extends Model
 {
     /** @use HasFactory<InvoiceFactory> */
@@ -25,6 +25,11 @@ class Invoice extends Model
             if (empty($invoice->uid)) {
                 $invoice->uid = uniqid();
             }
+
+            $invoice->settings = array_merge(
+                config('settings.invoice'),
+                $invoice->settings ?? [],
+            );
         });
     }
 
@@ -36,6 +41,7 @@ class Invoice extends Model
         return [
             'status' => InvoiceStatusEnum::class,
             'date' => 'date',
+            'settings' => 'json',
         ];
     }
 
@@ -48,11 +54,11 @@ class Invoice extends Model
     }
 
     /**
-     * @return HasMany<Task, $this>
+     * @return HasMany<InvoiceItem, $this>
      */
-    public function tasks(): HasMany
+    public function items(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(InvoiceItem::class);
     }
 
     /**
@@ -68,7 +74,7 @@ class Invoice extends Model
      */
     protected function totalAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->tasks->sum('amount'));
+        return Attribute::get(fn () => $this->items->sum(fn ($item) => $item->quantity * $item->amount));
     }
 
     /**

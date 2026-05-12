@@ -2,10 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Invoice;
+use App\Services\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\Invoice */
+/** @mixin Invoice */
 class InvoiceResource extends JsonResource
 {
     /**
@@ -18,16 +20,16 @@ class InvoiceResource extends JsonResource
             'uid' => $this->uid,
             'title' => $this->title,
             'status' => $this->status,
-            'date' => $this->date->format('Y-m-d'),
+            'date' => Helper::dateFormat($this->date),
             'client' => $this->whenLoaded('client', fn () => [
                 'id' => $this->client->id,
                 'name' => $this->client->name,
             ]),
-            'total_amount' => $this->total_amount,
-            'paid_amount' => $this->paid_amount,
-            'due_amount' => $this->due_amount,
+            'total_amount' => Helper::moneyFormat($this->total_amount),
+            'paid_amount' => Helper::moneyFormat($this->paid_amount),
+            'due_amount' => Helper::moneyFormat($this->due_amount),
             'public_url' => $this->public_url,
-            'created_at' => $this->created_at,
+            'created_at' => Helper::dateFormat($this->created_at, withTime: true),
         ];
     }
 }

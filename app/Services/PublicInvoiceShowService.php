@@ -13,7 +13,7 @@ class PublicInvoiceShowService
     public function handle(string $uid): array
     {
         $invoice = Invoice::where('uid', $uid)
-            ->with(['tasks', 'payments', 'client'])
+            ->with(['items', 'payments', 'client'])
             ->firstOrFail();
 
         return [

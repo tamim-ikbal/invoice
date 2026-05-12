@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
             $table->string('status')->default('draft');
-            $table->date('date');
+            $table->date('date')->nullable();
+            $table->json('settings')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

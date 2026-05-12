@@ -4,6 +4,7 @@ import { MoreHorizontal } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -63,83 +64,101 @@ function statusVariant(status: string) {
 <template>
     <Head title="Invoices" />
 
-    <div
-        class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-    >
+    <div class="flex h-full flex-1 flex-col gap-4 p-4">
         <div class="flex items-center justify-between">
             <Heading title="Invoices" />
             <CreateModal />
         </div>
 
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead class="text-right">Total</TableHead>
-                    <TableHead class="w-[70px]" />
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                <template v-if="invoices.data.length">
-                    <TableRow
-                        v-for="invoice in invoices.data"
-                        :key="invoice.id"
-                    >
-                        <TableCell>
-                            <Link
-                                :href="edit.url(invoice.id)"
-                                class="font-medium underline-offset-4 hover:underline"
+        <Card>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Title</TableHead>
+                            <TableHead>Client</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead class="text-right">Total</TableHead>
+                            <TableHead class="w-[70px]" />
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <template v-if="invoices.data.length">
+                            <TableRow
+                                v-for="invoice in invoices.data"
+                                :key="invoice.id"
                             >
-                                {{ invoice.title }}
-                            </Link>
-                        </TableCell>
-                        <TableCell>
-                            {{ invoice.client?.name ?? '-' }}
-                        </TableCell>
-                        <TableCell>
-                            <Badge :variant="statusVariant(invoice.status)">
-                                {{ invoice.status }}
-                            </Badge>
-                        </TableCell>
-                        <TableCell>{{ invoice.date }}</TableCell>
-                        <TableCell class="text-right">
-                            ${{ Number(invoice.total_amount).toFixed(2) }}
-                        </TableCell>
-                        <TableCell>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="h-8 w-8"
+                                <TableCell>
+                                    <Link
+                                        :href="edit.url(invoice.id)"
+                                        class="font-medium underline-offset-4 hover:underline"
                                     >
-                                        <MoreHorizontal class="h-4 w-4" />
-                                        <span class="sr-only">Open menu</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="edit.url(invoice.id)">
-                                            Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DeleteModal :invoice-id="invoice.id" />
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                    </TableRow>
-                </template>
-                <TableEmpty v-else :colspan="6">
-                    <p class="text-muted-foreground">
-                        No invoices found. Create your first invoice to get
-                        started.
-                    </p>
-                </TableEmpty>
-            </TableBody>
-        </Table>
+                                        {{ invoice.title }}
+                                    </Link>
+                                </TableCell>
+                                <TableCell>
+                                    {{ invoice.client?.name ?? '-' }}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge
+                                        :variant="
+                                            statusVariant(invoice.status)
+                                        "
+                                    >
+                                        {{ invoice.status }}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>{{
+                                    invoice.date ?? '-'
+                                }}</TableCell>
+                                <TableCell class="text-right">
+                                    {{ invoice.total_amount }}
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-8 w-8"
+                                            >
+                                                <MoreHorizontal
+                                                    class="h-4 w-4"
+                                                />
+                                                <span class="sr-only"
+                                                    >Open menu</span
+                                                >
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link
+                                                    :href="
+                                                        edit.url(invoice.id)
+                                                    "
+                                                >
+                                                    Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DeleteModal
+                                                :invoice-id="invoice.id"
+                                            />
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <TableEmpty v-else :colspan="6">
+                            <p class="text-muted-foreground">
+                                No invoices found. Create your first invoice to
+                                get started.
+                            </p>
+                        </TableEmpty>
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
     </div>
 </template>

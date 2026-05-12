@@ -5,9 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Admin\CreateInvoiceAction;
 use App\Actions\Admin\DeleteInvoiceAction;
 use App\Actions\Admin\UpdateInvoiceAction;
+use App\Actions\Admin\UpdateInvoiceSettingsAction;
+use App\DTOs\Admin\CreateInvoiceData;
+use App\DTOs\Admin\UpdateInvoiceData;
+use App\DTOs\Admin\UpdateInvoiceSettingsData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateInvoiceRequest;
 use App\Http\Requests\Admin\UpdateInvoiceRequest;
+use App\Http\Requests\Admin\UpdateInvoiceSettingsRequest;
 use App\Models\Invoice;
 use App\Services\InvoiceEditService;
 use App\Services\InvoiceIndexService;
@@ -30,7 +35,7 @@ class InvoiceController extends Controller
      */
     public function store(CreateInvoiceRequest $request, CreateInvoiceAction $action): RedirectResponse
     {
-        $invoice = $action->handle($request->validated());
+        $invoice = $action->handle(CreateInvoiceData::fromRequest($request));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Invoice created.')]);
 
@@ -50,9 +55,21 @@ class InvoiceController extends Controller
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice, UpdateInvoiceAction $action): RedirectResponse
     {
-        $action->handle($invoice, $request->validated());
+        $action->handle($invoice, UpdateInvoiceData::fromRequest($request));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Invoice updated.')]);
+
+        return to_route('admin.invoices.edit', $invoice);
+    }
+
+    /**
+     * Update the invoice settings.
+     */
+    public function updateSettings(UpdateInvoiceSettingsRequest $request, Invoice $invoice, UpdateInvoiceSettingsAction $action): RedirectResponse
+    {
+        $action->handle($invoice, UpdateInvoiceSettingsData::fromRequest($request));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Invoice settings updated.')]);
 
         return to_route('admin.invoices.edit', $invoice);
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Admin\DeleteClientAction;
 use App\Actions\Admin\StoreClientAction;
 use App\Actions\Admin\UpdateClientAction;
+use App\DTOs\Admin\ClientData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreClientRequest;
 use App\Http\Requests\Admin\UpdateClientRequest;
@@ -39,7 +40,7 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request, StoreClientAction $action): RedirectResponse
     {
-        $action->handle($request->validated());
+        $action->handle(ClientData::fromRequest($request));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Client created.')]);
 
@@ -59,7 +60,7 @@ class ClientController extends Controller
      */
     public function update(UpdateClientRequest $request, Client $client, UpdateClientAction $action): RedirectResponse
     {
-        $action->handle($client, $request->validated());
+        $action->handle($client, ClientData::fromRequest($request));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Client updated.')]);
 

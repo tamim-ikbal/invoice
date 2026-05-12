@@ -3,8 +3,8 @@
 use App\Enums\InvoiceStatusEnum;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Payment;
-use App\Models\Task;
 use App\Models\User;
 
 beforeEach(function () {
@@ -101,59 +101,79 @@ test('invoice general info can be updated', function () {
     expect($invoice->status)->toBe(InvoiceStatusEnum::SENT);
 });
 
-test('task can be added to an invoice', function () {
+test('item can be added to an invoice', function () {
     $invoice = Invoice::factory()->create();
 
     $response = $this
         ->actingAs($this->user)
-        ->post(route('admin.invoices.tasks.store', $invoice), [
-            'name' => 'New Task',
+        ->post(route('admin.invoices.invoice-items.store', $invoice), [
+            'name' => 'New Item',
             'amount' => 150.50,
         ]);
 
     $response->assertRedirect(route('admin.invoices.edit', $invoice));
 
-    expect($invoice->tasks)->toHaveCount(1);
-    expect($invoice->tasks->first()->name)->toBe('New Task');
+    expect($invoice->items)->toHaveCount(1);
+    expect($invoice->items->first()->name)->toBe('New Item');
+    expect($invoice->items->first()->quantity)->toBe(1);
 });
 
-test('task can be updated', function () {
+test('item can be added with quantity', function () {
     $invoice = Invoice::factory()->create();
-    $task = Task::factory()->for($invoice)->create();
 
     $response = $this
         ->actingAs($this->user)
-        ->put(route('admin.invoices.tasks.update', [$invoice, $task]), [
-            'name' => 'Updated Task',
+        ->post(route('admin.invoices.invoice-items.store', $invoice), [
+            'name' => 'Bulk Item',
+            'quantity' => 5,
+            'amount' => 100,
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $item = $invoice->items->first();
+
+    expect($item->name)->toBe('Bulk Item');
+    expect($item->quantity)->toBe(5);
+});
+
+test('item can be updated', function () {
+    $invoice = Invoice::factory()->create();
+    $item = InvoiceItem::factory()->for($invoice)->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->put(route('admin.invoices.invoice-items.update', [$invoice, $item]), [
+            'name' => 'Updated Item',
             'amount' => 200,
         ]);
 
     $response->assertRedirect(route('admin.invoices.edit', $invoice));
 
-    $task->refresh();
+    $item->refresh();
 
-    expect($task->name)->toBe('Updated Task');
+    expect($item->name)->toBe('Updated Item');
 });
 
-test('task can be deleted', function () {
+test('item can be deleted', function () {
     $invoice = Invoice::factory()->create();
-    $task = Task::factory()->for($invoice)->create();
+    $item = InvoiceItem::factory()->for($invoice)->create();
 
     $response = $this
         ->actingAs($this->user)
-        ->delete(route('admin.invoices.tasks.destroy', [$invoice, $task]));
+        ->delete(route('admin.invoices.invoice-items.destroy', [$invoice, $item]));
 
     $response->assertRedirect(route('admin.invoices.edit', $invoice));
 
-    $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
+    $this->assertDatabaseMissing('invoice_items', ['id' => $item->id]);
 });
 
-test('task creation validates fields', function () {
+test('item creation validates fields', function () {
     $invoice = Invoice::factory()->create();
 
     $response = $this
         ->actingAs($this->user)
-        ->post(route('admin.invoices.tasks.store', $invoice), [
+        ->post(route('admin.invoices.invoice-items.store', $invoice), [
             'name' => '',
             'amount' => -1,
         ]);
@@ -247,4 +267,45 @@ test('invoice gets a uid on creation', function () {
 
     expect($invoice->uid)->not->toBeNull();
     expect($invoice->uid)->not->toBeEmpty();
+});
+
+test('invoice settings can be updated', function () {
+    $invoice = Invoice::factory()->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => true,
+        ]);
+
+    $response->assertRedirect(route('admin.invoices.edit', $invoice));
+
+    $invoice->refresh();
+
+    expect($invoice->settings['show_quantity'])->toBeTrue();
+});
+
+test('invoice settings validation works', function () {
+    $invoice = Invoice::factory()->create();
+
+    $response = $this
+        ->actingAs($this->user)
+        ->patch(route('admin.invoices.settings.update', $invoice), [
+            'show_quantity' => 'invalid',
+        ]);
+
+    $response->assertSessionHasErrors('show_quantity');
+});
+
+test('new invoice has default settings from config', function () {
+    $this
+        ->actingAs($this->user)
+        ->post(route('admin.invoices.store'), [
+            'title' => 'Settings Test Invoice',
+        ]);
+
+    $invoice = Invoice::where('title', 'Settings Test Invoice')->first();
+
+    expect($invoice->settings)->toBeArray();
+    expect($invoice->settings['show_quantity'])->toBeFalse();
 });

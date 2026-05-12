@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
+import { computed } from 'vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -9,18 +10,29 @@ import {
 } from '@/components/ui/dropdown-menu';
 import UserInfo from '@/components/UserInfo.vue';
 import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import { edit as editAdminProfile } from '@/routes/admin/settings/profile';
+import { edit as editProfile } from '@/routes/profile';
 import type { User } from '@/types';
 
 type Props = {
     user: User;
 };
 
+defineProps<Props>();
+
+const page = usePage();
+
+const settingsUrl = computed(() => {
+    const role = (page.props.auth as { user: User }).user.role;
+
+    return role === 'super_admin' || role === 'admin'
+        ? editAdminProfile()
+        : editProfile();
+});
+
 const handleLogout = () => {
     router.flushAll();
 };
-
-defineProps<Props>();
 </script>
 
 <template>
@@ -32,7 +44,11 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
+            <Link
+                class="block w-full cursor-pointer"
+                :href="settingsUrl"
+                prefetch
+            >
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </Link>

@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Task;
+use App\Models\InvoiceItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Task>
+ * @extends Factory<InvoiceItem>
  */
-class TaskFactory extends Factory
+class InvoiceItemFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,6 +19,7 @@ class TaskFactory extends Factory
     {
         return [
             'name' => fake()->sentence(2),
+            'quantity' => 1,
             'amount' => fake()->randomFloat(2, 50, 500),
         ];
     }

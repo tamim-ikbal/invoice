@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Admin\CreatePaymentAction;
 use App\Actions\Admin\DeletePaymentAction;
 use App\Actions\Admin\UpdatePaymentAction;
+use App\DTOs\Admin\PaymentData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StorePaymentRequest;
 use App\Http\Requests\Admin\UpdatePaymentRequest;
@@ -20,7 +21,7 @@ class PaymentController extends Controller
      */
     public function store(StorePaymentRequest $request, Invoice $invoice, CreatePaymentAction $action): RedirectResponse
     {
-        $action->handle($invoice, $request->validated());
+        $action->handle($invoice, PaymentData::fromRequest($request));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Payment added.')]);
 
@@ -32,7 +33,7 @@ class PaymentController extends Controller
      */
     public function update(UpdatePaymentRequest $request, Invoice $invoice, Payment $payment, UpdatePaymentAction $action): RedirectResponse
     {
-        $action->handle($payment, $request->validated());
+        $action->handle($payment, PaymentData::fromRequest($request));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Payment updated.')]);
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useForm } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,7 +20,6 @@ import {
 } from '@/components/ui/select';
 import { update } from '@/routes/admin/invoices';
 import type { Client, InvoiceEdit, StatusOption } from '@/types';
-import { useForm } from '@inertiajs/vue3';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -65,8 +65,8 @@ function save() {
 
                 <div class="grid gap-2">
                     <Label for="client_id">Client</Label>
-                    <Select v-model="form.client_id">
-                        <SelectTrigger id="client_id">
+                    <Select v-model="form.client_id" class="w-full">
+                        <SelectTrigger id="client_id" class="w-full">
                             <SelectValue placeholder="No client" />
                         </SelectTrigger>
                         <SelectContent>
@@ -86,7 +86,7 @@ function save() {
                 <div class="grid gap-2">
                     <Label for="status">Status</Label>
                     <Select v-model="form.status">
-                        <SelectTrigger id="status">
+                        <SelectTrigger id="status" class="w-full">
                             <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>

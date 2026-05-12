@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Database\Factories\TaskFactory;
+use Database\Factories\InvoiceItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['invoice_id', 'name', 'amount'])]
-class Task extends Model
+#[Fillable(['invoice_id', 'name', 'quantity', 'amount'])]
+class InvoiceItem extends Model
 {
-    /** @use HasFactory<TaskFactory> */
+    /** @use HasFactory<InvoiceItemFactory> */
     use HasFactory;
 
     /**

@@ -1,11 +1,11 @@
 <?php
 
 use App\Models\Invoice;
-use App\Models\Task;
+use App\Models\InvoiceItem;
 
 test('public invoice page can be viewed without authentication', function () {
     $invoice = Invoice::factory()->create();
-    Task::factory()->for($invoice)->count(2)->create();
+    InvoiceItem::factory()->for($invoice)->count(2)->create();
 
     $response = $this->get(route('public.invoice.show', $invoice->uid));
 
@@ -24,8 +24,8 @@ test('public invoice page returns 404 for invalid uid', function () {
 
 test('public invoice page shows correct amounts', function () {
     $invoice = Invoice::factory()->create();
-    Task::factory()->for($invoice)->create(['amount' => 100]);
-    Task::factory()->for($invoice)->create(['amount' => 200]);
+    InvoiceItem::factory()->for($invoice)->create(['amount' => 100]);
+    InvoiceItem::factory()->for($invoice)->create(['amount' => 200]);
 
     $response = $this->get(route('public.invoice.show', $invoice->uid));
 

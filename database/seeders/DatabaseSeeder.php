@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Payment;
-use App\Models\Task;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
                 ->for($client)
                 ->create()
                 ->each(function (Invoice $invoice) {
-                    Task::factory(3)->for($invoice)->create();
+                    InvoiceItem::factory(3)->for($invoice)->create();
                     Payment::factory(1)->paid()->for($invoice)->create();
                     Payment::factory(1)->for($invoice)->create();
                 });
@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         Invoice::factory()
             ->create()
             ->each(function (Invoice $invoice) {
-                Task::factory(2)->for($invoice)->create();
+                InvoiceItem::factory(2)->for($invoice)->create();
             });
     }
 }

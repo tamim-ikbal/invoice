@@ -8,9 +8,10 @@ import { index as invoicesIndex } from '@/routes/admin/invoices';
 import type { Client, InvoiceEdit, StatusOption } from '@/types';
 import DeleteModal from './partial/DeleteModal.vue';
 import GeneralSection from './partial/GeneralSection.vue';
+import ItemsSection from './partial/ItemsSection.vue';
 import PaymentsSection from './partial/PaymentsSection.vue';
+import SettingsModal from './partial/SettingsModal.vue';
 import SummarySection from './partial/SummarySection.vue';
-import TasksSection from './partial/TasksSection.vue';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -40,15 +41,18 @@ defineOptions({
     >
         <div class="flex items-center justify-between">
             <Heading title="Edit Invoice" />
-            <Button
-                variant="outline"
-                as="a"
-                :href="invoice.public_url"
-                target="_blank"
-            >
-                <ExternalLink class="mr-2 h-4 w-4" />
-                View Public URL
-            </Button>
+            <div class="flex items-center gap-2">
+                <SettingsModal :invoice="invoice" />
+                <Button
+                    variant="outline"
+                    as="a"
+                    :href="invoice.public_url"
+                    target="_blank"
+                >
+                    <ExternalLink class="mr-2 h-4 w-4" />
+                    View Public URL
+                </Button>
+            </div>
         </div>
 
         <div class="flex flex-col gap-6">
@@ -57,7 +61,7 @@ defineOptions({
                 :clients="clients"
                 :statuses="statuses"
             />
-            <TasksSection :invoice="invoice" />
+            <ItemsSection :invoice="invoice" />
             <PaymentsSection :invoice="invoice" />
             <SummarySection :invoice="invoice" />
         </div>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
 import {
     Card,
     CardContent,
@@ -16,26 +15,24 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { Head } from '@inertiajs/vue3';
 
 interface Props {
     invoice: {
         uid: string;
         title: string;
-        date: string;
+        date: string | null;
         status: string;
         client: { name: string } | null;
-        tasks: Array<{ name: string; amount: number }>;
-        total_amount: number;
-        paid_amount: number;
-        due_amount: number;
+        items: Array<{ name: string; quantity: number; amount: string }>;
+        total_amount: string;
+        paid_amount: string;
+        due_amount: string;
+        settings: { show_quantity: boolean };
     };
 }
 
 const { invoice } = defineProps<Props>();
-
-function formatAmount(amount: number): string {
-    return `$${amount.toFixed(2)}`;
-}
 </script>
 
 <template>
@@ -43,12 +40,12 @@ function formatAmount(amount: number): string {
 
     <Card>
         <CardHeader>
-            <CardTitle>Payment for #{{ invoice.title }}</CardTitle>
+            <CardTitle>{{ invoice.title }}</CardTitle>
             <CardDescription>
                 <template v-if="invoice.client">
                     {{ invoice.client.name }} &bull;
                 </template>
-                {{ invoice.date }}
+                {{ invoice.date ?? 'No date' }}
             </CardDescription>
         </CardHeader>
 
@@ -57,15 +54,27 @@ function formatAmount(amount: number): string {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
+                        <TableHead
+                            v-if="invoice.settings?.show_quantity"
+                            class="text-right"
+                        >
+                            Qty
+                        </TableHead>
                         <TableHead class="text-right">Amount</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="task in invoice.tasks" :key="task.name">
-                        <TableCell>{{ task.name }}</TableCell>
-                        <TableCell class="text-right">{{
-                            formatAmount(task.amount)
-                        }}</TableCell>
+                    <TableRow v-for="item in invoice.items" :key="item.name">
+                        <TableCell>{{ item.name }}</TableCell>
+                        <TableCell
+                            v-if="invoice.settings?.show_quantity"
+                            class="text-right"
+                        >
+                            {{ item.quantity }}
+                        </TableCell>
+                        <TableCell class="text-right">
+                            {{ item.amount }}
+                        </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
@@ -75,17 +84,15 @@ function formatAmount(amount: number): string {
             <div class="space-y-0">
                 <div class="flex justify-between py-2">
                     <span>Total</span>
-                    <span>{{ formatAmount(invoice.total_amount) }}</span>
+                    <span>{{ invoice.total_amount }}</span>
                 </div>
                 <div class="flex justify-between py-2">
                     <span>Paid Amount</span>
-                    <span>{{ formatAmount(invoice.paid_amount) }}</span>
+                    <span>{{ invoice.paid_amount }}</span>
                 </div>
                 <div class="flex justify-between py-2">
                     <span>Due Amount</span>
-                    <span class="font-semibold">{{
-                        formatAmount(invoice.due_amount)
-                    }}</span>
+                    <span class="font-semibold">{{ invoice.due_amount }}</span>
                 </div>
             </div>
         </CardContent>

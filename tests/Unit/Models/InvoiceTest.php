@@ -4,8 +4,8 @@ use App\Enums\InvoiceStatusEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Payment;
-use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,11 +26,11 @@ test('invoice belongs to a client', function () {
     expect($invoice->client->id)->toBe($client->id);
 });
 
-test('invoice has many tasks', function () {
+test('invoice has many items', function () {
     $invoice = Invoice::factory()->create();
-    Task::factory()->for($invoice)->count(3)->create();
+    InvoiceItem::factory()->for($invoice)->count(3)->create();
 
-    expect($invoice->tasks)->toHaveCount(3);
+    expect($invoice->items)->toHaveCount(3);
 });
 
 test('invoice has many payments', function () {
@@ -40,12 +40,12 @@ test('invoice has many payments', function () {
     expect($invoice->payments)->toHaveCount(2);
 });
 
-test('total amount is sum of task amounts', function () {
+test('total amount is sum of quantity times amount', function () {
     $invoice = Invoice::factory()->create();
-    Task::factory()->for($invoice)->create(['amount' => 150.50]);
-    Task::factory()->for($invoice)->create(['amount' => 249.50]);
+    InvoiceItem::factory()->for($invoice)->create(['quantity' => 2, 'amount' => 150.50]);
+    InvoiceItem::factory()->for($invoice)->create(['quantity' => 1, 'amount' => 249.50]);
 
-    expect($invoice->total_amount)->toBe(400.0);
+    expect($invoice->total_amount)->toBe(550.5);
 });
 
 test('paid amount only counts paid payments', function () {
@@ -58,7 +58,7 @@ test('paid amount only counts paid payments', function () {
 
 test('due amount is total minus paid', function () {
     $invoice = Invoice::factory()->create();
-    Task::factory()->for($invoice)->create(['amount' => 500]);
+    InvoiceItem::factory()->for($invoice)->create(['amount' => 500]);
     Payment::factory()->for($invoice)->paid()->create(['amount' => 200]);
 
     expect((float) $invoice->due_amount)->toBe(300.0);
@@ -74,7 +74,7 @@ test('invoice casts status to enum', function () {
 test('invoice casts date to carbon', function () {
     $invoice = Invoice::factory()->create(['date' => '2026-05-12']);
 
-    expect($invoice->date)->toBeInstanceOf(\DateTimeInterface::class);
+    expect($invoice->date)->toBeInstanceOf(DateTimeInterface::class);
     expect($invoice->date->toDateString())->toBe('2026-05-12');
 });
 
@@ -90,4 +90,11 @@ test('public url contains the uid', function () {
     $invoice = Invoice::factory()->create();
 
     expect($invoice->public_url)->toContain("/invoice/{$invoice->uid}");
+});
+
+test('new invoice gets default settings from config', function () {
+    $invoice = Invoice::factory()->create();
+
+    expect($invoice->settings)->toBeArray();
+    expect($invoice->settings['show_quantity'])->toBeFalse();
 });

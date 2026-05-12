@@ -47,20 +47,21 @@ trait InvoiceValidationRules
      */
     protected function dateRules(): array
     {
-        return ['required', 'date'];
+        return ['nullable', 'date'];
     }
 
     /**
-     * Get the validation rules for invoice tasks.
+     * Get the validation rules for invoice items.
      *
      * @return array<string, array<int, ValidationRule|array<mixed>|string>>
      */
-    protected function taskRules(): array
+    protected function itemRules(): array
     {
         return [
-            'tasks' => ['array'],
-            'tasks.*.name' => ['required', 'string'],
-            'tasks.*.amount' => ['required', 'numeric', 'min:0'],
+            'items' => ['array'],
+            'items.*.name' => ['required', 'string'],
+            'items.*.quantity' => ['sometimes', 'integer', 'min:1'],
+            'items.*.amount' => ['required', 'numeric', 'min:0'],
         ];
     }
 

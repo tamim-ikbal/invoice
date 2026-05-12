@@ -5,7 +5,7 @@ namespace App\Http\Requests\Admin;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTaskRequest extends FormRequest
+class UpdateInvoiceItemRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,6 +16,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
+            'quantity' => ['sometimes', 'integer', 'min:1'],
             'amount' => ['required', 'numeric', 'min:0'],
         ];
     }

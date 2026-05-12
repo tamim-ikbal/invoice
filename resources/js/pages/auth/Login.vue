@@ -8,7 +8,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
@@ -22,7 +21,7 @@ defineOptions({
 defineProps<{
     status?: string;
     canResetPassword: boolean;
-    canRegister: boolean;
+    credentials?: { email: string; password: string };
 }>();
 </script>
 
@@ -54,6 +53,7 @@ defineProps<{
                     :tabindex="1"
                     autocomplete="email"
                     placeholder="email@example.com"
+                    :default-value="credentials?.email"
                 />
                 <InputError :message="errors.email" />
             </div>
@@ -77,6 +77,7 @@ defineProps<{
                     :tabindex="2"
                     autocomplete="current-password"
                     placeholder="Password"
+                    :default-value="credentials?.password"
                 />
                 <InputError :message="errors.password" />
             </div>
@@ -98,14 +99,6 @@ defineProps<{
                 <Spinner v-if="processing" />
                 Log in
             </Button>
-        </div>
-
-        <div
-            class="text-center text-sm text-muted-foreground"
-            v-if="canRegister"
-        >
-            Don't have an account?
-            <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
         </div>
     </Form>
 </template>

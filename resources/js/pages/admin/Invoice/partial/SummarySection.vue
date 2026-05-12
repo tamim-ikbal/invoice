@@ -20,21 +20,21 @@ defineProps<Props>();
                 <div class="flex items-center justify-between">
                     <span class="text-sm text-muted-foreground">Total</span>
                     <span class="font-medium">
-                        ${{ Number(invoice.total_amount).toFixed(2) }}
+                        {{ invoice.total_amount }}
                     </span>
                 </div>
                 <Separator />
                 <div class="flex items-center justify-between">
                     <span class="text-sm text-muted-foreground">Paid</span>
                     <span class="font-medium text-green-600">
-                        ${{ Number(invoice.paid_amount).toFixed(2) }}
+                        {{ invoice.paid_amount }}
                     </span>
                 </div>
                 <Separator />
                 <div class="flex items-center justify-between">
                     <span class="text-sm text-muted-foreground">Due</span>
                     <span class="font-medium text-red-600">
-                        ${{ Number(invoice.due_amount).toFixed(2) }}
+                        {{ invoice.due_amount }}
                     </span>
                 </div>
             </div>

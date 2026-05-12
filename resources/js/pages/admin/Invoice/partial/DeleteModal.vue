@@ -44,7 +44,7 @@ const props = defineProps<Props>();
                         Are you sure you want to delete this invoice?
                     </DialogTitle>
                     <DialogDescription>
-                        Once this invoice is deleted, all of its data, tasks,
+                        Once this invoice is deleted, all of its data, items,
                         and payments will be permanently removed. This action
                         cannot be undone.
                     </DialogDescription>

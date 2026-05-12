@@ -2,16 +2,14 @@
 
 namespace App\Actions\Admin;
 
+use App\DTOs\Admin\PaymentData;
 use App\Models\Invoice;
 use App\Models\Payment;
 
 class CreatePaymentAction
 {
-    /**
-     * @param  array{amount: float, date: string, status: string, payment_method: string}  $data
-     */
-    public function handle(Invoice $invoice, array $data): Payment
+    public function handle(Invoice $invoice, PaymentData $data): Payment
     {
-        return $invoice->payments()->create($data);
+        return $invoice->payments()->create($data->toArray());
     }
 }
