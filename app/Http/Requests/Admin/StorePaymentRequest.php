@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use App\Enums\PaymentMethodEnum;
+use App\Enums\PaymentStatusEnum;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class StorePaymentRequest extends FormRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'amount' => ['required', 'numeric', 'min:0'],
+            'date' => ['required', 'date'],
+            'status' => ['required', Rule::enum(PaymentStatusEnum::class)],
+            'payment_method' => ['required', Rule::enum(PaymentMethodEnum::class)],
+        ];
+    }
+}

@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\InvoiceStatusEnum;
+use App\Enums\PaymentStatusEnum;
+use Database\Factories\InvoiceFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+#[Fillable(['uid', 'client_id', 'title', 'status', 'date'])]
+class Invoice extends Model
+{
+    /** @use HasFactory<InvoiceFactory> */
+    use HasFactory, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::creating(function (Invoice $invoice) {
+            if (empty($invoice->uid)) {
+                $invoice->uid = uniqid();
+            }
+        });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => InvoiceStatusEnum::class,
+            'date' => 'date',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<Client, $this>
+     */
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * @return HasMany<Task, $this>
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
+    protected function totalAmount(): Attribute
+    {
+        return Attribute::get(fn () => $this->tasks->sum('amount'));
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
+    protected function paidAmount(): Attribute
+    {
+        return Attribute::get(fn () => $this->payments->where('status', PaymentStatusEnum::PAID)->sum('amount'));
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
+    protected function dueAmount(): Attribute
+    {
+        return Attribute::get(fn () => $this->total_amount - $this->paid_amount);
+    }
+
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function publicUrl(): Attribute
+    {
+        return Attribute::get(fn () => url("/invoice/{$this->uid}"));
+    }
+}
