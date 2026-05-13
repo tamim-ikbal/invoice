@@ -1,1 +1,0 @@
-import{p as e,st as t}from"./vue.runtime.esm-bundler-BGuJtOPg.js";import{i as n}from"./useForwardExpose-DDZfuil-.js";function r(){let r=t();return{primitiveElement:r,currentElement:e(()=>[`#text`,`#comment`].includes(r.value?.$el.nodeName)?r.value?.$el.nextElementSibling:n(r))}}export{r as t};
