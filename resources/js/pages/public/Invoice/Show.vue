@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ReadMoreText from '@/components/ReadMoreText.vue';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -35,7 +36,7 @@ const { invoice } = defineProps<Props>();
 
     <Card>
         <CardHeader>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-4 md:gap-6">
                 <div class="flex flex-col">
                     <CardTitle>{{ invoice.title }}</CardTitle>
                     <CardDescription class="text-sm text-muted-foreground">
@@ -48,7 +49,10 @@ const { invoice } = defineProps<Props>();
                     </CardDescription>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold" v-if="invoice.invoice_no">
+                    <h1
+                        class="text-base font-bold md:text-xl"
+                        v-if="invoice.invoice_no"
+                    >
                         {{ invoice.invoice_no }}
                     </h1>
                 </div>
@@ -66,12 +70,16 @@ const { invoice } = defineProps<Props>();
                         >
                             Qty
                         </TableHead>
-                        <TableHead class="text-right">Amount</TableHead>
+                        <TableHead class="min-w-[110px] text-right">
+                            Amount
+                        </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="item in invoice.items" :key="item.name">
-                        <TableCell>{{ item.name }}</TableCell>
+                        <TableCell class="whitespace-normal">
+                            <ReadMoreText :text="item.name" />
+                        </TableCell>
                         <TableCell
                             v-if="invoice.settings?.show_quantity"
                             class="text-right"

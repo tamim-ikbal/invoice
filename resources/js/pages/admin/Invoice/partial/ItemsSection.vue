@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { Form, useForm } from '@inertiajs/vue3';
+import { MoreHorizontal, Plus } from 'lucide-vue-next';
+import { ref } from 'vue';
 import InvoiceItemController from '@/actions/App/Http/Controllers/Admin/InvoiceItemController';
 import InputError from '@/components/InputError.vue';
+import ReadMoreText from '@/components/ReadMoreText.vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -37,9 +41,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import type { InvoiceEdit } from '@/types';
-import { Form, useForm } from '@inertiajs/vue3';
-import { MoreHorizontal, Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -219,7 +220,7 @@ function submitDelete() {
                         >
                             Qty
                         </TableHead>
-                        <TableHead class="w-[180px] text-right">
+                        <TableHead class="min-w-[110px] text-right">
                             Amount
                         </TableHead>
                         <TableHead class="w-[70px]" />
@@ -227,7 +228,9 @@ function submitDelete() {
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="item in invoice.items" :key="item.id">
-                        <TableCell>{{ item.name }}</TableCell>
+                        <TableCell class="whitespace-normal">
+                            <ReadMoreText :text="item.name" />
+                        </TableCell>
                         <TableCell
                             v-if="invoice.settings.show_quantity"
                             class="text-right"
