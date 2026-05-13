@@ -1,0 +1,1 @@
+import{p as e,pt as t}from"./vue.runtime.esm-bundler-BGuJtOPg.js";import{i as n}from"./useForwardExpose-DDZfuil-.js";function r(r){return e(()=>t(r)?!!n(r)?.closest(`form`):!0)}export{r as t};
