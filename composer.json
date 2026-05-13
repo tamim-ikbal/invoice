@@ -100,7 +100,7 @@
             "echo 'Installing NPM Packages...'",
             "yarn install --immutable",
             "echo 'NPM Packages Reinstalled!'",
-            "yarn build:ssr",
+            "yarn build",
             "echo 'Frontend build complete!'",
             "@php artisan migrate --force --no-interaction",
             "echo 'Migration Done!'",
