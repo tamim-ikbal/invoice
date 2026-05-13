@@ -89,6 +89,28 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "deploy": [
+            "echo 'Deploying Started!'",
+            "Composer\\Config::disableProcessTimeout",
+            "@composer install --no-dev --no-interaction --no-progress --optimize-autoloader",
+            "echo 'Composer Package Installed!'",
+            "@php artisan optimize:clear --quiet --no-interaction",
+            "echo 'Cache Cleared!'",
+            "echo 'Installing NPM Packages...'",
+            "npm ci",
+            "echo 'NPM Packages Reinstalled!'",
+            "npm run build:ssr",
+            "echo 'Frontend build complete!'",
+            "@php artisan migrate --force --no-interaction",
+            "echo 'Migration Done!'",
+            "@php artisan storage:link --quiet --no-interaction",
+            "echo 'Symbolic link created!'",
+            "@php artisan optimize --quiet --no-interaction",
+            "echo 'Cache Builded!'",
+            "@php artisan queue:restart --quiet --no-interaction",
+            "echo 'Queue restart signal!'",
+            "echo 'Deploy Completed!'"
         ]
     },
     "extra": {
