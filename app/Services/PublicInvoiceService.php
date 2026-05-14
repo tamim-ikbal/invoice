@@ -5,12 +5,12 @@ namespace App\Services;
 use App\Http\Resources\PublicInvoiceResource;
 use App\Models\Invoice;
 
-class PublicInvoiceShowService
+class PublicInvoiceService
 {
     /**
      * @return array{invoice: PublicInvoiceResource}
      */
-    public function handle(string $uid): array
+    public function show(string $uid): array
     {
         $invoice = Invoice::where('uid', $uid)
             ->with(['items', 'payments', 'client'])

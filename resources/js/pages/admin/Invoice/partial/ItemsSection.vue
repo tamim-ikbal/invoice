@@ -40,10 +40,11 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import type { InvoiceEdit } from '@/types';
+import type { InvoiceEdit, InvoiceItem } from '@/types';
 
 type Props = {
     invoice: InvoiceEdit;
+    items: InvoiceItem[];
 };
 
 const props = defineProps<Props>();
@@ -89,6 +90,7 @@ function submitEdit() {
         }),
         {
             preserveScroll: true,
+            only: ['items'],
             onSuccess: () => {
                 editOpen.value = false;
             },
@@ -115,6 +117,7 @@ function submitDelete() {
         }),
         {
             preserveScroll: true,
+            only: ['items'],
             onSuccess: () => {
                 deleteOpen.value = false;
             },
@@ -142,7 +145,7 @@ function submitDelete() {
                                     props.invoice.id,
                                 )
                             "
-                            :options="{ preserveScroll: true }"
+                            :options="{ preserveScroll: true, only: ['items', 'invoice'] }"
                             class="space-y-6"
                             v-slot="{ errors, processing }"
                             resetOnSuccess
@@ -210,7 +213,7 @@ function submitDelete() {
             </CardAction>
         </CardHeader>
         <CardContent>
-            <Table v-if="invoice.items.length">
+            <Table v-if="items.length">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
@@ -227,7 +230,7 @@ function submitDelete() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="item in invoice.items" :key="item.id">
+                    <TableRow v-for="item in items" :key="item.id">
                         <TableCell class="whitespace-normal">
                             <ReadMoreText :text="item.name" />
                         </TableCell>

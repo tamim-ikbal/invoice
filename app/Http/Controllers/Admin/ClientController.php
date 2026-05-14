@@ -12,7 +12,7 @@ use App\Http\Requests\Admin\UpdateClientRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Services\ClientIndexService;
+use App\Services\ClientService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -23,9 +23,9 @@ class ClientController extends Controller
     /**
      * Display a listing of clients.
      */
-    public function index(ClientIndexService $service): Response
+    public function index(ClientService $service): Response
     {
-        return Inertia::render('admin/Client/Index', $service->handle());
+        return Inertia::render('admin/Client/Index', $service->index());
     }
 
     /**

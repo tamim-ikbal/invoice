@@ -33,8 +33,11 @@ test('invoice index displays invoices', function () {
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
         ->component('admin/Invoice/Index')
-        ->has('invoices.data', 1)
-        ->where('invoices.data.0.title', 'Test Invoice')
+        ->missing('invoices')
+        ->loadDeferredProps(fn ($reload) => $reload
+            ->has('invoices.data', 1)
+            ->where('invoices.data.0.title', 'Test Invoice')
+        )
     );
 });
 
@@ -76,6 +79,12 @@ test('invoice edit page can be rendered', function () {
         ->has('invoice')
         ->has('clients')
         ->has('statuses')
+        ->missing('items')
+        ->missing('payments')
+        ->loadDeferredProps(fn ($reload) => $reload
+            ->has('items')
+            ->has('payments')
+        )
     );
 });
 

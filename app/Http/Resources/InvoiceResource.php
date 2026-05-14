@@ -19,7 +19,7 @@ class InvoiceResource extends JsonResource
             'id' => $this->id,
             'uid' => $this->uid,
             'title' => $this->title,
-            'status' => $this->status,
+            'status' => $this->status->label(),
             'date' => Helper::dateFormat($this->date),
             'client' => $this->whenLoaded('client', fn () => [
                 'id' => $this->client->id,
