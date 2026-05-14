@@ -44,8 +44,6 @@ export type Invoice = {
 };
 
 export type InvoiceEdit = Invoice & {
-    items: InvoiceItem[];
-    payments: Payment[];
     settings: InvoiceSettings;
 };
 

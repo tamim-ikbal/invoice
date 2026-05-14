@@ -30,19 +30,6 @@ class InvoiceEditResource extends JsonResource
             'due_amount' => Helper::moneyFormat($this->due_amount),
             'public_url' => $this->public_url,
             'created_at' => Helper::dateFormat($this->created_at, withTime: true),
-            'items' => $this->items->map(fn ($item) => [
-                'id' => $item->id,
-                'name' => $item->name,
-                'quantity' => $item->quantity,
-                'amount' => Helper::numberFormat($item->amount),
-            ]),
-            'payments' => $this->payments->map(fn ($payment) => [
-                'id' => $payment->id,
-                'amount' => Helper::numberFormat($payment->amount),
-                'date' => $payment->date->format('Y-m-d'),
-                'status' => $payment->status,
-                'payment_method' => $payment->payment_method,
-            ]),
             'settings' => $this->settings,
         ];
     }

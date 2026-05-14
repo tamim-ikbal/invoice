@@ -14,8 +14,7 @@ use App\Http\Requests\Admin\CreateInvoiceRequest;
 use App\Http\Requests\Admin\UpdateInvoiceRequest;
 use App\Http\Requests\Admin\UpdateInvoiceSettingsRequest;
 use App\Models\Invoice;
-use App\Services\InvoiceEditService;
-use App\Services\InvoiceIndexService;
+use App\Services\InvoiceService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,9 +24,9 @@ class InvoiceController extends Controller
     /**
      * Display a listing of invoices.
      */
-    public function index(InvoiceIndexService $service): Response
+    public function index(InvoiceService $service): Response
     {
-        return Inertia::render('admin/Invoice/Index', $service->handle());
+        return Inertia::render('admin/Invoice/Index', $service->index());
     }
 
     /**
@@ -45,9 +44,9 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified invoice.
      */
-    public function edit(Invoice $invoice, InvoiceEditService $service): Response
+    public function edit(Invoice $invoice, InvoiceService $service): Response
     {
-        return Inertia::render('admin/Invoice/Edit', $service->handle($invoice));
+        return Inertia::render('admin/Invoice/Edit', $service->edit($invoice));
     }
 
     /**

@@ -48,12 +48,11 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import type { InvoiceEdit } from '@/types';
-
-type Payment = InvoiceEdit['payments'][number];
+import type { InvoiceEdit, Payment } from '@/types';
 
 type Props = {
     invoice: InvoiceEdit;
+    payments: Payment[];
 };
 
 const props = defineProps<Props>();
@@ -80,6 +79,7 @@ function submitAdd() {
         PaymentController.store.url({ invoice: props.invoice.id }),
         {
             preserveScroll: true,
+            only: ['payments'],
             onSuccess: () => {
                 addOpen.value = false;
                 addForm.reset();
@@ -117,6 +117,7 @@ function submitEdit() {
         }),
         {
             preserveScroll: true,
+            only: ['payments'],
             onSuccess: () => {
                 editOpen.value = false;
             },
@@ -143,6 +144,7 @@ function submitDelete() {
         }),
         {
             preserveScroll: true,
+            only: ['payments'],
             onSuccess: () => {
                 deleteOpen.value = false;
             },
@@ -257,7 +259,7 @@ function submitDelete() {
             </CardAction>
         </CardHeader>
         <CardContent>
-            <Table v-if="invoice.payments.length">
+            <Table v-if="payments.length">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Amount</TableHead>
@@ -269,7 +271,7 @@ function submitDelete() {
                 </TableHeader>
                 <TableBody>
                     <TableRow
-                        v-for="payment in invoice.payments"
+                        v-for="payment in payments"
                         :key="payment.id"
                     >
                         <TableCell>
