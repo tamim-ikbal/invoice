@@ -3,9 +3,12 @@
 namespace App\Jobs;
 
 use App\Models\InvoiceViewLog;
+use App\Models\User;
+use App\Notifications\InvoiceViewedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 
 class LogInvoiceView implements ShouldQueue
 {
@@ -28,13 +31,17 @@ class LogInvoiceView implements ShouldQueue
     {
         $location = $this->resolveLocation();
 
-        InvoiceViewLog::create([
+        $log = InvoiceViewLog::create([
             'invoice_id' => $this->invoiceId,
             'ip' => $this->ip,
             'browser' => $this->browser,
             'country' => $location,
             'viewed_at' => $this->viewedAt,
         ]);
+
+        $log->load('invoice');
+
+        Notification::send(User::getAdmins(), new InvoiceViewedNotification($log));
     }
 
     /**

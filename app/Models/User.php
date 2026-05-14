@@ -7,6 +7,7 @@ use App\Enums\UserRoleEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -48,5 +49,15 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->role === UserRoleEnum::SUPER_ADMIN;
+    }
+
+    /**
+     * Get all admin users (super_admin and admin roles).
+     *
+     * @return Collection<int, User>
+     */
+    public static function getAdmins(): Collection
+    {
+        return static::whereIn('role', [UserRoleEnum::SUPER_ADMIN, UserRoleEnum::ADMIN])->get();
     }
 }
