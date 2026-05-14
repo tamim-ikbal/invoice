@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, router } from '@inertiajs/vue3';
-import { Pencil, Trash2 } from 'lucide-vue-next';
+import { ExternalLink, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
@@ -143,6 +143,17 @@ function statusVariant(status: string) {
                                     </TableCell>
                                     <TableCell>
                                         <div class="flex items-center justify-end gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-8 w-8"
+                                                as="a"
+                                                :href="invoice.public_url"
+                                                target="_blank"
+                                            >
+                                                <ExternalLink class="h-4 w-4" />
+                                                <span class="sr-only">Public View</span>
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
