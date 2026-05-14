@@ -9,20 +9,21 @@ use App\Http\Resources\InvoiceResource;
 use App\Models\Client;
 use App\Models\Invoice;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection as ResourceCollection;
 use Inertia\DeferProp;
 use Inertia\Inertia;
 
 class InvoiceService
 {
     /**
-     * @return array{invoices: DeferProp}
+     * @return array{invoices: ResourceCollection}
      */
     public function index(): array
     {
         return [
-            'invoices' => Inertia::defer(fn () => InvoiceResource::collection(
+            'invoices' => InvoiceResource::collection(
                 Invoice::with('client')->latest()->paginate()
-            )),
+            ),
         ];
     }
 

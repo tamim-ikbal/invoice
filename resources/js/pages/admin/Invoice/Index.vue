@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { Deferred, Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
-import TableSkeleton from '@/components/TableSkeleton.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,7 +23,7 @@ import CreateModal from './partial/CreateModal.vue';
 import DeleteModal from './partial/DeleteModal.vue';
 
 type Props = {
-    invoices?: Paginated<Invoice>;
+    invoices: Paginated<Invoice>;
 };
 
 defineProps<Props>();
@@ -83,20 +82,7 @@ function statusVariant(status: string) {
             <CreateModal />
         </div>
 
-        <Deferred data="invoices">
-            <template #fallback>
-                <Card>
-                    <CardContent>
-                        <TableSkeleton
-                            :columns="6"
-                            :rows="5"
-                            :headers="['Title', 'Client', 'Status', 'Date', 'Total', '']"
-                        />
-                    </CardContent>
-                </Card>
-            </template>
-
-            <Card>
+        <Card>
                 <CardContent>
                     <Table>
                         <TableHeader>
@@ -110,7 +96,7 @@ function statusVariant(status: string) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <template v-if="invoices?.data.length">
+                            <template v-if="invoices.data.length">
                                 <TableRow
                                     v-for="invoice in invoices.data"
                                     :key="invoice.id"
@@ -189,8 +175,7 @@ function statusVariant(status: string) {
                 </CardContent>
             </Card>
 
-            <TablePagination v-if="invoices" :links="invoices.meta.links" />
-        </Deferred>
+            <TablePagination :links="invoices.meta.links" />
     </div>
 
     <DeleteModal

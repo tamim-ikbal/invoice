@@ -30,11 +30,8 @@ test('client index displays clients', function () {
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
         ->component('admin/Client/Index')
-        ->missing('clients')
-        ->loadDeferredProps(fn ($reload) => $reload
-            ->has('clients.data', 1)
-            ->where('clients.data.0.name', 'Acme Corp')
-        )
+        ->has('clients.data', 1)
+        ->where('clients.data.0.name', 'Acme Corp')
     );
 });
 
@@ -48,11 +45,8 @@ test('client index page returns paginated data', function () {
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
         ->component('admin/Client/Index')
-        ->missing('clients')
-        ->loadDeferredProps(fn ($reload) => $reload
-            ->has('clients.data', 3)
-            ->has('clients.meta')
-        )
+        ->has('clients.data', 3)
+        ->has('clients.meta')
     );
 });
 

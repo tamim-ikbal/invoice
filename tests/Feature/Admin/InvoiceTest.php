@@ -33,11 +33,8 @@ test('invoice index displays invoices', function () {
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page
         ->component('admin/Invoice/Index')
-        ->missing('invoices')
-        ->loadDeferredProps(fn ($reload) => $reload
-            ->has('invoices.data', 1)
-            ->where('invoices.data.0.title', 'Test Invoice')
-        )
+        ->has('invoices.data', 1)
+        ->where('invoices.data.0.title', 'Test Invoice')
     );
 });
 

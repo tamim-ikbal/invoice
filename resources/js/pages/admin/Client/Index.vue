@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { Deferred, Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { FileText, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 import { defineAsyncComponent, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
-import TableSkeleton from '@/components/TableSkeleton.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -33,7 +32,7 @@ const InvoicesModal = defineAsyncComponent(
 );
 
 type Props = {
-    clients?: Paginated<Client>;
+    clients: Paginated<Client>;
 };
 
 defineProps<Props>();
@@ -88,20 +87,7 @@ function openInvoices(client: Client) {
             </Button>
         </div>
 
-        <Deferred data="clients">
-            <template #fallback>
-                <Card>
-                    <CardContent>
-                        <TableSkeleton
-                            :columns="4"
-                            :rows="5"
-                            :headers="['Name', 'Email', 'Invoices', '']"
-                        />
-                    </CardContent>
-                </Card>
-            </template>
-
-            <Card>
+        <Card>
                 <CardContent>
                     <Table>
                         <TableHeader>
@@ -115,7 +101,7 @@ function openInvoices(client: Client) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <template v-if="clients?.data.length">
+                            <template v-if="clients.data.length">
                                 <TableRow
                                     v-for="client in clients.data"
                                     :key="client.id"
@@ -172,8 +158,7 @@ function openInvoices(client: Client) {
                 </CardContent>
             </Card>
 
-            <TablePagination v-if="clients" :links="clients.meta.links" />
-        </Deferred>
+            <TablePagination :links="clients.meta.links" />
     </div>
 
     <CreateModal v-model:open="createOpen" />
