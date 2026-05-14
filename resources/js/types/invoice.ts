@@ -25,6 +25,14 @@ export type Payment = {
     payment_method: PaymentMethod;
 };
 
+export type InvoiceViewLog = {
+    id: number;
+    ip: string;
+    browser: string;
+    country: string | null;
+    viewed_at: string;
+};
+
 export type InvoiceSettings = {
     show_quantity: boolean;
 };

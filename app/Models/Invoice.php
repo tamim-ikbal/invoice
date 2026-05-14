@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['uid', 'client_id', 'title', 'status', 'date', 'settings','invoice_no'])]
+#[Fillable(['uid', 'client_id', 'title', 'status', 'date', 'settings', 'invoice_no'])]
 class Invoice extends Model
 {
     /** @use HasFactory<InvoiceFactory> */
@@ -72,6 +72,14 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * @return HasMany<InvoiceViewLog, $this>
+     */
+    public function viewLogs(): HasMany
+    {
+        return $this->hasMany(InvoiceViewLog::class);
     }
 
     /**

@@ -8,7 +8,7 @@ use App\Models\Invoice;
 class PublicInvoiceService
 {
     /**
-     * @return array{invoice: PublicInvoiceResource}
+     * @return array{invoice: array<string, mixed>, invoiceId: int}
      */
     public function show(string $uid): array
     {
@@ -18,6 +18,7 @@ class PublicInvoiceService
 
         return [
             'invoice' => PublicInvoiceResource::make($invoice)->resolve(),
+            'invoiceId' => $invoice->id,
         ];
     }
 }

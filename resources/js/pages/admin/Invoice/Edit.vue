@@ -26,6 +26,7 @@ import ItemsSection from './partial/ItemsSection.vue';
 import PaymentsSection from './partial/PaymentsSection.vue';
 import SettingsModal from './partial/SettingsModal.vue';
 import SummarySection from './partial/SummarySection.vue';
+import ViewLogsModal from './partial/ViewLogsModal.vue';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -58,6 +59,7 @@ defineOptions({
         <div class="flex items-center justify-between">
             <Heading title="Edit Invoice" />
             <div class="flex items-center gap-2">
+                <ViewLogsModal :invoice="invoice" />
                 <SettingsModal :invoice="invoice" />
                 <Button
                     variant="outline"

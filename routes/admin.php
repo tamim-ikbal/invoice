@@ -11,6 +11,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::resource('invoices', InvoiceController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::patch('invoices/{invoice}/settings', [InvoiceController::class, 'updateSettings'])->name('invoices.settings.update');
+    Route::get('invoices/{invoice}/view-logs', [InvoiceController::class, 'viewLogs'])->name('invoices.view-logs');
     Route::resource('invoices.invoice-items', InvoiceItemController::class)
         ->only(['store', 'update', 'destroy'])
         ->parameters(['invoice-items' => 'invoiceItem']);
