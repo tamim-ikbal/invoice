@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
-import { MoreHorizontal, Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
 import PaymentController from '@/actions/App/Http/Controllers/Admin/PaymentController';
 import InputError from '@/components/InputError.vue';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +46,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import type { InvoiceEdit, Payment } from '@/types';
+import { useForm } from '@inertiajs/vue3';
+import { MoreHorizontal, Plus } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -77,18 +77,15 @@ const addForm = useForm({
 });
 
 function submitAdd() {
-    addForm.post(
-        PaymentController.store.url({ invoice: props.invoice.id }),
-        {
-            preserveScroll: true,
-            only: ['payments'],
-            onSuccess: () => {
-                addOpen.value = false;
-                addForm.reset();
-                addForm.date = today();
-            },
+    addForm.post(PaymentController.store.url({ invoice: props.invoice.id }), {
+        preserveScroll: true,
+        only: ['payments'],
+        onSuccess: () => {
+            addOpen.value = false;
+            addForm.reset();
+            addForm.date = today();
         },
-    );
+    });
 }
 
 const editForm = useForm({
@@ -157,7 +154,6 @@ function submitDelete() {
         },
     );
 }
-
 </script>
 
 <template>
@@ -253,17 +249,20 @@ function submitDelete() {
                                             <SelectItem value="payoneer">
                                                 Payoneer
                                             </SelectItem>
+                                            <SelectItem value="payoneer_ach">
+                                                Payoneer ACH
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <InputError
-                                        :message="
-                                            addForm.errors.payment_method
-                                        "
+                                        :message="addForm.errors.payment_method"
                                     />
                                 </div>
 
                                 <div class="grid gap-2">
-                                    <Label for="payment-bdt-rate">BDT Rate</Label>
+                                    <Label for="payment-bdt-rate"
+                                        >BDT Rate</Label
+                                    >
                                     <Input
                                         id="payment-bdt-rate"
                                         v-model="addForm.bdt_rate"
@@ -307,16 +306,11 @@ function submitDelete() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow
-                        v-for="payment in payments"
-                        :key="payment.id"
-                    >
+                    <TableRow v-for="payment in payments" :key="payment.id">
                         <TableCell>
                             {{ payment.title ?? '-' }}
                         </TableCell>
-                        <TableCell>
-                            ${{ payment.amount }}
-                        </TableCell>
+                        <TableCell> ${{ payment.amount }} </TableCell>
                         <TableCell>{{ payment.date }}</TableCell>
                         <TableCell>
                             <Badge
@@ -336,8 +330,15 @@ function submitDelete() {
                         </TableCell>
                         <TableCell>
                             <template v-if="payment.bdt_rate">
-                                ৳{{ (parseFloat(payment.amount) * parseFloat(payment.bdt_rate)).toFixed(2) }}
-                                <span class="text-xs text-muted-foreground">({{ payment.bdt_rate }})</span>
+                                ৳{{
+                                    (
+                                        parseFloat(payment.amount) *
+                                        parseFloat(payment.bdt_rate)
+                                    ).toFixed(2)
+                                }}
+                                <span class="text-xs text-muted-foreground"
+                                    >({{ payment.bdt_rate }})</span
+                                >
                             </template>
                             <template v-else>-</template>
                         </TableCell>
@@ -449,6 +450,9 @@ function submitDelete() {
                                 <SelectItem value="payoneer"
                                     >Payoneer</SelectItem
                                 >
+                                <SelectItem value="payoneer_ach"
+                                    >Payoneer ACH</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                         <InputError :message="editForm.errors.payment_method" />
@@ -486,9 +490,10 @@ function submitDelete() {
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Delete payment?</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete this
-                        ${{ deletePayment?.amount ?? '' }} payment? This action
-                        cannot be undone.
+                        Are you sure you want to delete this ${{
+                            deletePayment?.amount ?? ''
+                        }}
+                        payment? This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
 
