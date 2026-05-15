@@ -18,6 +18,7 @@ class UpdatePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title' => ['nullable', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0'],
             'date' => ['required', 'date'],
             'status' => ['required', Rule::enum(PaymentStatusEnum::class)],

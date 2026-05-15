@@ -9,6 +9,7 @@ use App\Services\Helper;
 final readonly class PaymentData
 {
     public function __construct(
+        public ?string $title,
         public float $amount,
         public string $date,
         public string $status,
@@ -20,6 +21,7 @@ final readonly class PaymentData
         $data = $request->validated();
 
         return new self(
+            title: $data['title'] ?? null,
             amount: Helper::roundAmount($data['amount']),
             date: $data['date'] ?? now()->toDateString(),
             status: $data['status'],
@@ -33,6 +35,7 @@ final readonly class PaymentData
     public function toArray(): array
     {
         return [
+            'title' => $this->title,
             'amount' => $this->amount,
             'date' => $this->date,
             'status' => $this->status,

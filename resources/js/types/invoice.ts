@@ -1,5 +1,5 @@
 export type InvoiceStatus = 'draft' | 'in_progress' | 'sent' | 'paid';
-export type PaymentStatus = 'paid' | 'unpaid';
+export type PaymentStatus = 'unpaid' | 'pending' | 'paid';
 export type PaymentMethod = 'payoneer';
 
 export type Client = {
@@ -19,6 +19,7 @@ export type InvoiceItem = {
 
 export type Payment = {
     id?: number;
+    title: string | null;
     amount: string;
     date: string;
     status: PaymentStatus;

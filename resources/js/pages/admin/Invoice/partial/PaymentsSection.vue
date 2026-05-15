@@ -68,6 +68,7 @@ const deletePayment = ref<Payment | null>(null);
 const deleteOpen = ref(false);
 
 const addForm = useForm({
+    title: '',
     amount: '',
     date: today(),
     status: 'unpaid',
@@ -90,6 +91,7 @@ function submitAdd() {
 }
 
 const editForm = useForm({
+    title: '',
     amount: '',
     date: '',
     status: 'unpaid',
@@ -98,6 +100,7 @@ const editForm = useForm({
 
 function openEdit(payment: Payment) {
     editingPayment.value = payment;
+    editForm.title = payment.title ?? '';
     editForm.amount = payment.amount;
     editForm.date = payment.date;
     editForm.status = payment.status;
@@ -177,6 +180,18 @@ function submitDelete() {
 
                             <div class="grid gap-4">
                                 <div class="grid gap-2">
+                                    <Label for="payment-title">Title</Label>
+                                    <Input
+                                        id="payment-title"
+                                        v-model="addForm.title"
+                                        placeholder="e.g. Installment 1"
+                                    />
+                                    <InputError
+                                        :message="addForm.errors.title"
+                                    />
+                                </div>
+
+                                <div class="grid gap-2">
                                     <Label for="payment-amount">Amount</Label>
                                     <Input
                                         id="payment-amount"
@@ -211,6 +226,9 @@ function submitDelete() {
                                         <SelectContent>
                                             <SelectItem value="paid">
                                                 Paid
+                                            </SelectItem>
+                                            <SelectItem value="pending">
+                                                Pending
                                             </SelectItem>
                                             <SelectItem value="unpaid">
                                                 Unpaid
@@ -262,6 +280,7 @@ function submitDelete() {
             <Table v-if="payments.length">
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Title</TableHead>
                         <TableHead>Amount</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead>Status</TableHead>
@@ -275,6 +294,9 @@ function submitDelete() {
                         :key="payment.id"
                     >
                         <TableCell>
+                            {{ payment.title ?? '-' }}
+                        </TableCell>
+                        <TableCell>
                             ${{ payment.amount }}
                         </TableCell>
                         <TableCell>{{ payment.date }}</TableCell>
@@ -283,7 +305,9 @@ function submitDelete() {
                                 :variant="
                                     payment.status === 'paid'
                                         ? 'default'
-                                        : 'secondary'
+                                        : payment.status === 'pending'
+                                          ? 'outline'
+                                          : 'secondary'
                                 "
                             >
                                 {{ payment.status }}
@@ -344,6 +368,16 @@ function submitDelete() {
 
                 <div class="grid gap-4">
                     <div class="grid gap-2">
+                        <Label for="edit-payment-title">Title</Label>
+                        <Input
+                            id="edit-payment-title"
+                            v-model="editForm.title"
+                            placeholder="e.g. Installment 1"
+                        />
+                        <InputError :message="editForm.errors.title" />
+                    </div>
+
+                    <div class="grid gap-2">
                         <Label for="edit-payment-amount">Amount</Label>
                         <Input
                             id="edit-payment-amount"
@@ -373,6 +407,7 @@ function submitDelete() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="paid">Paid</SelectItem>
+                                <SelectItem value="pending">Pending</SelectItem>
                                 <SelectItem value="unpaid">Unpaid</SelectItem>
                             </SelectContent>
                         </Select>

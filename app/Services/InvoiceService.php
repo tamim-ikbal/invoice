@@ -49,6 +49,7 @@ class InvoiceService
             ])),
             'payments' => Inertia::defer(fn () => $invoice->payments->map(fn ($payment) => [
                 'id' => $payment->id,
+                'title' => $payment->title,
                 'amount' => Helper::numberFormat($payment->amount),
                 'date' => $payment->date->format('Y-m-d'),
                 'status' => $payment->status,

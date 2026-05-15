@@ -103,7 +103,7 @@ class Invoice extends Model
      */
     protected function dueAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->total_amount - $this->paid_amount);
+        return Attribute::get(fn () => max(0, $this->total_amount - $this->paid_amount));
     }
 
     /**

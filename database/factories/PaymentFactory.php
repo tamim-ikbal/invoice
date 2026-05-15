@@ -20,6 +20,7 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
+            'title' => fake()->optional()->sentence(3),
             'amount' => fake()->randomFloat(2, 50, 500),
             'date' => fake()->date(),
             'status' => PaymentStatusEnum::UNPAID,

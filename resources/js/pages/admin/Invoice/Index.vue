@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ExternalLink, Pencil, Trash2 } from 'lucide-vue-next';
+import { ExternalLink, Mail, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
+import InvoiceController from '@/actions/App/Http/Controllers/Admin/InvoiceController';
 import Heading from '@/components/Heading.vue';
 import TablePagination from '@/components/TablePagination.vue';
 import { Badge } from '@/components/ui/badge';
@@ -40,8 +41,19 @@ defineOptions({
 });
 
 const navigatingId = ref<number | null>(null);
+const sendingId = ref<number | null>(null);
 const deletingInvoice = ref<Invoice | null>(null);
 const deleteOpen = ref(false);
+
+function sendInvoice(invoice: Invoice) {
+    sendingId.value = invoice.id;
+    router.post(InvoiceController.send.url(invoice.id), {}, {
+        preserveScroll: true,
+        onFinish: () => {
+            sendingId.value = null;
+        },
+    });
+}
 
 function navigateEdit(invoice: Invoice) {
     navigatingId.value = invoice.id;
@@ -129,6 +141,16 @@ function statusVariant(status: string) {
                                     </TableCell>
                                     <TableCell>
                                         <div class="flex items-center justify-end gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-8 w-8"
+                                                :disabled="!invoice.client || sendingId === invoice.id"
+                                                @click="sendInvoice(invoice)"
+                                            >
+                                                <Mail class="h-4 w-4" />
+                                                <span class="sr-only">Send Invoice</span>
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

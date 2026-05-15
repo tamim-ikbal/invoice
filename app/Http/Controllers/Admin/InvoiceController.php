@@ -16,6 +16,7 @@ use App\Http\Requests\Admin\UpdateInvoiceSettingsRequest;
 use App\Http\Resources\InvoiceViewLogResource;
 use App\Models\Invoice;
 use App\Models\InvoiceViewLog;
+use App\Notifications\InvoiceSentNotification;
 use App\Services\InvoiceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -86,6 +87,24 @@ class InvoiceController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Invoice deleted.')]);
 
         return to_route('admin.invoices.index');
+    }
+
+    /**
+     * Send the invoice to the client via email.
+     */
+    public function send(Invoice $invoice): RedirectResponse
+    {
+        $invoice->loadMissing('client');
+
+        if (! $invoice->client) {
+            abort(422, 'No client assigned.');
+        }
+
+        $invoice->client->notify(new InvoiceSentNotification($invoice));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Invoice sent.')]);
+
+        return back();
     }
 
     /**
