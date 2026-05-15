@@ -23,6 +23,7 @@ class StorePaymentRequest extends FormRequest
             'date' => ['required', 'date'],
             'status' => ['required', Rule::enum(PaymentStatusEnum::class)],
             'payment_method' => ['required', Rule::enum(PaymentMethodEnum::class)],
+            'bdt_rate' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

@@ -10,11 +10,13 @@ class UpdatePaymentAction
 {
     public function handle(Payment $payment, PaymentData $data): Payment
     {
+        $statusChanged = $payment->status !== $data->status;
+
         $payment->update($data->toArray());
 
         $payment->load('invoice.client');
 
-        if ($payment->invoice->client && $payment->status->shouldNotifyClient()) {
+        if ($statusChanged && $payment->invoice->client && $payment->status->shouldNotifyClient()) {
             $payment->invoice->client->notify(new PaymentRecordedNotification($payment));
         }
 

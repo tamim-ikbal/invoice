@@ -73,6 +73,7 @@ const addForm = useForm({
     date: today(),
     status: 'unpaid',
     payment_method: 'payoneer',
+    bdt_rate: '',
 });
 
 function submitAdd() {
@@ -96,6 +97,7 @@ const editForm = useForm({
     date: '',
     status: 'unpaid',
     payment_method: 'payoneer',
+    bdt_rate: '',
 });
 
 function openEdit(payment: Payment) {
@@ -105,6 +107,7 @@ function openEdit(payment: Payment) {
     editForm.date = payment.date;
     editForm.status = payment.status;
     editForm.payment_method = payment.payment_method;
+    editForm.bdt_rate = payment.bdt_rate ?? '';
     editOpen.value = true;
 }
 
@@ -258,6 +261,20 @@ function submitDelete() {
                                         "
                                     />
                                 </div>
+
+                                <div class="grid gap-2">
+                                    <Label for="payment-bdt-rate">BDT Rate</Label>
+                                    <Input
+                                        id="payment-bdt-rate"
+                                        v-model="addForm.bdt_rate"
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="e.g. 121.50"
+                                    />
+                                    <InputError
+                                        :message="addForm.errors.bdt_rate"
+                                    />
+                                </div>
                             </div>
 
                             <DialogFooter class="gap-2">
@@ -285,6 +302,7 @@ function submitDelete() {
                         <TableHead>Date</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Method</TableHead>
+                        <TableHead>BDT Rate</TableHead>
                         <TableHead class="w-[70px]" />
                     </TableRow>
                 </TableHeader>
@@ -315,6 +333,13 @@ function submitDelete() {
                         </TableCell>
                         <TableCell class="capitalize">
                             {{ payment.payment_method }}
+                        </TableCell>
+                        <TableCell>
+                            <template v-if="payment.bdt_rate">
+                                ৳{{ (parseFloat(payment.amount) * parseFloat(payment.bdt_rate)).toFixed(2) }}
+                                <span class="text-xs text-muted-foreground">({{ payment.bdt_rate }})</span>
+                            </template>
+                            <template v-else>-</template>
                         </TableCell>
                         <TableCell>
                             <DropdownMenu>
@@ -427,6 +452,18 @@ function submitDelete() {
                             </SelectContent>
                         </Select>
                         <InputError :message="editForm.errors.payment_method" />
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="edit-payment-bdt-rate">BDT Rate</Label>
+                        <Input
+                            id="edit-payment-bdt-rate"
+                            v-model="editForm.bdt_rate"
+                            type="number"
+                            step="0.01"
+                            placeholder="e.g. 121.50"
+                        />
+                        <InputError :message="editForm.errors.bdt_rate" />
                     </div>
                 </div>
 

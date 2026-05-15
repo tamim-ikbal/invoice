@@ -25,6 +25,7 @@ class PaymentFactory extends Factory
             'date' => fake()->date(),
             'status' => PaymentStatusEnum::UNPAID,
             'payment_method' => PaymentMethodEnum::PAYONEER,
+            'bdt_rate' => fake()->optional()->randomFloat(2, 100, 130),
         ];
     }
 

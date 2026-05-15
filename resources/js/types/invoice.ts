@@ -24,6 +24,7 @@ export type Payment = {
     date: string;
     status: PaymentStatus;
     payment_method: PaymentMethod;
+    bdt_rate: string | null;
 };
 
 export type InvoiceViewLog = {

@@ -10,6 +10,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('invoice/{uid}', [InvoiceController::class, 'show'])->name('public.invoice.show');
+Route::get('invoice/{uid}/payments', [InvoiceController::class, 'payments'])->name('public.invoice.payments');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';

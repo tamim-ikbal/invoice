@@ -11,6 +11,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Head } from '@inertiajs/vue3';
+import { defineAsyncComponent } from 'vue';
+
+const PaymentsModal = defineAsyncComponent(
+    () => import('./partial/PaymentsModal.vue'),
+);
 
 interface Props {
     invoice: {
@@ -108,6 +113,10 @@ const { invoice } = defineProps<Props>();
                     <span>Due Amount</span>
                     <span class="font-semibold">{{ invoice.due_amount }}</span>
                 </div>
+            </div>
+
+            <div class="flex justify-start pt-4">
+                <PaymentsModal :uid="invoice.uid" />
             </div>
         </CardContent>
     </Card>

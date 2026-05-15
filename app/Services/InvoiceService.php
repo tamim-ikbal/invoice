@@ -54,6 +54,7 @@ class InvoiceService
                 'date' => $payment->date->format('Y-m-d'),
                 'status' => $payment->status,
                 'payment_method' => $payment->payment_method,
+                'bdt_rate' => $payment->bdt_rate ? Helper::numberFormat($payment->bdt_rate) : null,
             ])),
         ];
     }

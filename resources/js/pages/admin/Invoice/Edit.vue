@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { Deferred, Head, router } from '@inertiajs/vue3';
+import { ExternalLink, Mail } from 'lucide-vue-next';
+import { ref } from 'vue';
 import InvoiceController from '@/actions/App/Http/Controllers/Admin/InvoiceController';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
@@ -26,9 +29,6 @@ import type {
     Payment,
     StatusOption,
 } from '@/types';
-import { Deferred, Head, router } from '@inertiajs/vue3';
-import { ExternalLink, Mail } from 'lucide-vue-next';
-import { ref } from 'vue';
 import GeneralSection from './partial/GeneralSection.vue';
 import ItemsSection from './partial/ItemsSection.vue';
 import PaymentsSection from './partial/PaymentsSection.vue';
@@ -189,6 +189,7 @@ defineOptions({
                                         <TableHead>Date</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Method</TableHead>
+                                        <TableHead>BDT Rate</TableHead>
                                         <TableHead class="w-[70px]" />
                                     </TableRow>
                                 </TableHeader>
@@ -206,6 +207,9 @@ defineOptions({
                                         <TableCell
                                             ><Skeleton
                                                 class="h-5 w-12 rounded-full"
+                                        /></TableCell>
+                                        <TableCell
+                                            ><Skeleton class="h-4 w-16"
                                         /></TableCell>
                                         <TableCell
                                             ><Skeleton class="h-4 w-16"
