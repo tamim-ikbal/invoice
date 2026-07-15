@@ -104,6 +104,7 @@ function statusVariant(status: string) {
                                 <TableHead>Status</TableHead>
                                 <TableHead>Date</TableHead>
                                 <TableHead class="text-right">Total</TableHead>
+                                <TableHead class="text-right">Paid Total (BDT)</TableHead>
                                 <TableHead class="w-[100px]" />
                             </TableRow>
                         </TableHeader>
@@ -138,6 +139,9 @@ function statusVariant(status: string) {
                                     }}</TableCell>
                                     <TableCell class="text-right">
                                         {{ invoice.total_amount }}
+                                    </TableCell>
+                                    <TableCell class="text-right">
+                                        {{ invoice.paid_bdt_amount }}
                                     </TableCell>
                                     <TableCell>
                                         <div class="flex items-center justify-end gap-1">
@@ -186,7 +190,7 @@ function statusVariant(status: string) {
                                     </TableCell>
                                 </TableRow>
                             </template>
-                            <TableEmpty v-else :colspan="6">
+                            <TableEmpty v-else :colspan="7">
                                 <p class="text-muted-foreground">
                                     No invoices found. Create your first invoice to
                                     get started.

@@ -101,6 +101,16 @@ class Invoice extends Model
     /**
      * @return Attribute<float, never>
      */
+    protected function paidBdtAmount(): Attribute
+    {
+        return Attribute::get(fn () => $this->payments
+            ->where('status', PaymentStatusEnum::PAID)
+            ->sum(fn ($payment) => $payment->amount * ($payment->bdt_rate ?? 0)));
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
     protected function dueAmount(): Attribute
     {
         return Attribute::get(fn () => max(0, $this->total_amount - $this->paid_amount));

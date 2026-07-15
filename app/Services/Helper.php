@@ -16,6 +16,15 @@ class Helper
     }
 
     /**
+     * Format a number as money with the BDT currency symbol.
+     * e.g. "৳1,234.00"
+     */
+    public static function bdtMoneyFormat(float|int|string $amount): string
+    {
+        return '৳'.number_format((float) $amount, 2);
+    }
+
+    /**
      * Format a number to always have 2 decimal places.
      * e.g. "1234.00"
      */

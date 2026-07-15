@@ -38,6 +38,36 @@ test('invoice index displays invoices', function () {
     );
 });
 
+test('invoice index displays paid total in bdt from paid payments', function () {
+    $invoice = Invoice::factory()->create();
+
+    Payment::factory()->for($invoice)->paid()->create([
+        'amount' => 100,
+        'bdt_rate' => 120,
+    ]);
+
+    Payment::factory()->for($invoice)->paid()->create([
+        'amount' => 50,
+        'bdt_rate' => 110,
+    ]);
+
+    // Unpaid payments must not count towards the paid BDT total.
+    Payment::factory()->for($invoice)->create([
+        'amount' => 200,
+        'bdt_rate' => 120,
+    ]);
+
+    $response = $this
+        ->actingAs($this->user)
+        ->get(route('admin.invoices.index'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('admin/Invoice/Index')
+        ->where('invoices.data.0.paid_bdt_amount', '৳17,500.00')
+    );
+});
+
 test('invoice can be created with just a title', function () {
     $response = $this
         ->actingAs($this->user)

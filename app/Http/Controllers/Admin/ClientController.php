@@ -70,7 +70,7 @@ class ClientController extends Controller
     public function invoices(Client $client): JsonResponse
     {
         $invoices = Invoice::where('client_id', $client->id)
-            ->with('client')
+            ->with(['client', 'payments'])
             ->latest()
             ->paginate();
 

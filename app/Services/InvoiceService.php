@@ -22,7 +22,7 @@ class InvoiceService
     {
         return [
             'invoices' => InvoiceResource::collection(
-                Invoice::with('client')->latest()->paginate()
+                Invoice::with(['client', 'payments'])->latest()->paginate()
             ),
         ];
     }
