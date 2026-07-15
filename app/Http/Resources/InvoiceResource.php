@@ -27,6 +27,7 @@ class InvoiceResource extends JsonResource
             ]),
             'total_amount' => Helper::moneyFormat($this->total_amount),
             'paid_amount' => Helper::moneyFormat($this->paid_amount),
+            'paid_bdt_amount' => Helper::bdtMoneyFormat($this->paid_bdt_amount),
             'due_amount' => Helper::moneyFormat($this->due_amount),
             'public_url' => $this->public_url,
             'created_at' => Helper::dateFormat($this->created_at, withTime: true),

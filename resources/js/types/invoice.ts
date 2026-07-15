@@ -48,6 +48,7 @@ export type Invoice = {
     client: { id: number; name: string } | null;
     total_amount: string;
     paid_amount: string;
+    paid_bdt_amount: string;
     due_amount: string;
     public_url: string;
     created_at: string;
