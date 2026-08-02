@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\InvoiceStatusEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Services\Helper;
 use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -83,11 +84,58 @@ class Invoice extends Model
     }
 
     /**
+     * Balances carried out of this invoice and onto another one.
+     *
+     * Named `adjustments` (rather than `adjustmentsOut`) because the source invoice owns
+     * these rows and Laravel derives scoped route bindings from the plural parameter name.
+     *
+     * @return HasMany<Adjustment, $this>
+     */
+    public function adjustments(): HasMany
+    {
+        return $this->hasMany(Adjustment::class, 'source_invoice_id');
+    }
+
+    /**
+     * Balances carried into this invoice from a previous one.
+     *
+     * @return HasMany<Adjustment, $this>
+     */
+    public function adjustmentsIn(): HasMany
+    {
+        return $this->hasMany(Adjustment::class, 'target_invoice_id');
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
+    protected function itemsAmount(): Attribute
+    {
+        return Attribute::get(fn () => (float) $this->items->sum(fn ($item) => $item->quantity * $item->amount));
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
+    protected function adjustmentInAmount(): Attribute
+    {
+        return Attribute::get(fn () => (float) $this->adjustmentsIn->sum('amount'));
+    }
+
+    /**
+     * @return Attribute<float, never>
+     */
+    protected function adjustmentOutAmount(): Attribute
+    {
+        return Attribute::get(fn () => (float) $this->adjustments->sum('amount'));
+    }
+
+    /**
      * @return Attribute<float, never>
      */
     protected function totalAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->items->sum(fn ($item) => $item->quantity * $item->amount));
+        return Attribute::get(fn () => Helper::roundAmount($this->items_amount + $this->adjustment_in_amount));
     }
 
     /**
@@ -113,7 +161,9 @@ class Invoice extends Model
      */
     protected function dueAmount(): Attribute
     {
-        return Attribute::get(fn () => max(0, $this->total_amount - $this->paid_amount));
+        return Attribute::get(fn () => max(0, Helper::roundAmount(
+            $this->total_amount - $this->paid_amount - $this->adjustment_out_amount
+        )));
     }
 
     /**

@@ -13,7 +13,7 @@ class PublicInvoiceService
     public function show(string $uid): array
     {
         $invoice = Invoice::where('uid', $uid)
-            ->with(['items', 'payments', 'client'])
+            ->with(['items', 'payments', 'client', 'adjustmentsIn.sourceInvoice', 'adjustments.targetInvoice'])
             ->firstOrFail();
 
         return [

@@ -29,6 +29,15 @@ class PublicInvoiceResource extends JsonResource
                 'quantity' => $item->quantity,
                 'amount' => Helper::moneyFormat($item->amount),
             ]),
+            'adjustments_in' => $this->adjustmentsIn->map(fn ($adjustment) => [
+                'invoice_no' => $adjustment->sourceInvoice?->invoice_no,
+                'amount' => Helper::moneyFormat($adjustment->amount),
+            ]),
+            'adjustments_out' => $this->adjustments->map(fn ($adjustment) => [
+                'invoice_no' => $adjustment->targetInvoice?->invoice_no,
+                'amount' => Helper::moneyFormat($adjustment->amount),
+            ]),
+            'items_amount' => Helper::moneyFormat($this->items_amount),
             'total_amount' => Helper::moneyFormat($this->total_amount),
             'paid_amount' => Helper::moneyFormat($this->paid_amount),
             'due_amount' => Helper::moneyFormat($this->due_amount),

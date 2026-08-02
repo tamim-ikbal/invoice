@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdjustmentController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\InvoiceItemController;
@@ -17,6 +18,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         ->only(['store', 'update', 'destroy'])
         ->parameters(['invoice-items' => 'invoiceItem']);
     Route::resource('invoices.payments', PaymentController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('invoices.adjustments', AdjustmentController::class)->only(['store', 'update', 'destroy'])->scoped();
+    Route::post('invoices/{invoice}/adjustments/{adjustment}/link', [AdjustmentController::class, 'link'])->name('invoices.adjustments.link');
+    Route::delete('invoices/{invoice}/adjustments/{adjustment}/link', [AdjustmentController::class, 'unlink'])->name('invoices.adjustments.unlink');
     Route::resource('clients', ClientController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('clients/{client}/invoices', [ClientController::class, 'invoices'])->name('clients.invoices');
 });

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useForm } from '@inertiajs/vue3';
+import { MoreHorizontal, Plus } from 'lucide-vue-next';
+import { ref } from 'vue';
 import PaymentController from '@/actions/App/Http/Controllers/Admin/PaymentController';
 import InputError from '@/components/InputError.vue';
 import { Badge } from '@/components/ui/badge';
@@ -46,9 +49,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import type { InvoiceEdit, Payment } from '@/types';
-import { useForm } from '@inertiajs/vue3';
-import { MoreHorizontal, Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
 
 type Props = {
     invoice: InvoiceEdit;
@@ -79,7 +79,7 @@ const addForm = useForm({
 function submitAdd() {
     addForm.post(PaymentController.store.url({ invoice: props.invoice.id }), {
         preserveScroll: true,
-        only: ['payments'],
+        only: ['payments', 'invoice'],
         onSuccess: () => {
             addOpen.value = false;
             addForm.reset();
@@ -120,7 +120,7 @@ function submitEdit() {
         }),
         {
             preserveScroll: true,
-            only: ['payments'],
+            only: ['payments', 'invoice'],
             onSuccess: () => {
                 editOpen.value = false;
             },
@@ -147,7 +147,7 @@ function submitDelete() {
         }),
         {
             preserveScroll: true,
-            only: ['payments'],
+            only: ['payments', 'invoice'],
             onSuccess: () => {
                 deleteOpen.value = false;
             },

@@ -23,12 +23,16 @@ import {
 } from '@/components/ui/table';
 import { index as invoicesIndex } from '@/routes/admin/invoices';
 import type {
+    Adjustment,
     Client,
     InvoiceEdit,
     InvoiceItem,
     Payment,
+    PendingAdjustment,
     StatusOption,
+    TargetInvoice,
 } from '@/types';
+import AdjustmentsSection from './partial/AdjustmentsSection.vue';
 import GeneralSection from './partial/GeneralSection.vue';
 import ItemsSection from './partial/ItemsSection.vue';
 import PaymentsSection from './partial/PaymentsSection.vue';
@@ -42,6 +46,9 @@ type Props = {
     statuses: StatusOption[];
     items?: InvoiceItem[];
     payments?: Payment[];
+    adjustments?: Adjustment[];
+    pendingAdjustments?: PendingAdjustment[];
+    targetInvoices?: TargetInvoice[];
 };
 
 const props = defineProps<Props>();
@@ -231,7 +238,61 @@ defineOptions({
                 />
             </Deferred>
 
-            <SummarySection :items="items" :payments="payments" />
+            <Deferred data="adjustments">
+                <template #fallback>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Adjustments</CardTitle>
+                            <CardAction>
+                                <Skeleton class="h-8 w-28 rounded-md" />
+                            </CardAction>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Direction</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Invoice</TableHead>
+                                        <TableHead>Note</TableHead>
+                                        <TableHead class="w-[70px]" />
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow v-for="i in 2" :key="i">
+                                        <TableCell
+                                            ><Skeleton
+                                                class="h-5 w-20 rounded-full"
+                                        /></TableCell>
+                                        <TableCell
+                                            ><Skeleton class="h-4 w-16"
+                                        /></TableCell>
+                                        <TableCell
+                                            ><Skeleton class="h-4 w-20"
+                                        /></TableCell>
+                                        <TableCell
+                                            ><Skeleton class="h-4 w-24"
+                                        /></TableCell>
+                                        <TableCell
+                                            ><Skeleton
+                                                class="ml-auto h-8 w-8 rounded-md"
+                                        /></TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </template>
+
+                <AdjustmentsSection
+                    :invoice="invoice"
+                    :adjustments="adjustments ?? []"
+                    :pending-adjustments="pendingAdjustments"
+                    :target-invoices="targetInvoices"
+                />
+            </Deferred>
+
+            <SummarySection :invoice="invoice" />
         </div>
     </div>
 </template>
