@@ -45,6 +45,13 @@ const sendingId = ref<number | null>(null);
 const deletingInvoice = ref<Invoice | null>(null);
 const deleteOpen = ref(false);
 
+function hasAdjustment(invoice: Invoice): boolean {
+    return (
+        invoice.adjustment_in_amount !== '$0.00' ||
+        invoice.adjustment_out_amount !== '$0.00'
+    );
+}
+
 function sendInvoice(invoice: Invoice) {
     sendingId.value = invoice.id;
     router.post(InvoiceController.send.url(invoice.id), {}, {
@@ -139,6 +146,12 @@ function statusVariant(status: string) {
                                     }}</TableCell>
                                     <TableCell class="text-right">
                                         {{ invoice.total_amount }}
+                                        <span
+                                            v-if="hasAdjustment(invoice)"
+                                            class="block text-xs text-muted-foreground"
+                                        >
+                                            adjusted
+                                        </span>
                                     </TableCell>
                                     <TableCell class="text-right">
                                         {{ invoice.paid_bdt_amount }}

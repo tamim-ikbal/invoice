@@ -2,6 +2,7 @@
 
 use App\Enums\InvoiceStatusEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Models\Adjustment;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -62,6 +63,64 @@ test('due amount is total minus paid', function () {
     Payment::factory()->for($invoice)->paid()->create(['amount' => 200]);
 
     expect((float) $invoice->due_amount)->toBe(300.0);
+});
+
+test('total amount includes balances carried in', function () {
+    $source = Invoice::factory()->create();
+    $target = Invoice::factory()->create();
+    InvoiceItem::factory()->for($target)->create(['quantity' => 1, 'amount' => 300]);
+    Adjustment::factory()->for($source, 'sourceInvoice')->for($target, 'targetInvoice')->create(['amount' => 95]);
+
+    expect($target->total_amount)->toBe(395.0);
+    expect($target->items_amount)->toBe(300.0);
+});
+
+test('total amount is unchanged by balances carried out', function () {
+    $source = Invoice::factory()->create();
+    InvoiceItem::factory()->for($source)->create(['quantity' => 1, 'amount' => 595]);
+    Adjustment::factory()->for($source, 'sourceInvoice')->unapplied()->create(['amount' => 95]);
+
+    expect($source->total_amount)->toBe(595.0);
+});
+
+test('due amount subtracts balances carried out', function () {
+    $source = Invoice::factory()->create();
+    InvoiceItem::factory()->for($source)->create(['quantity' => 1, 'amount' => 595]);
+    Payment::factory()->for($source)->paid()->create(['amount' => 500]);
+    Adjustment::factory()->for($source, 'sourceInvoice')->unapplied()->create(['amount' => 95]);
+
+    expect((float) $source->due_amount)->toBe(0.0);
+});
+
+test('due amount is never negative when carried out exceeds the balance', function () {
+    $source = Invoice::factory()->create();
+    InvoiceItem::factory()->for($source)->create(['quantity' => 1, 'amount' => 100]);
+    Adjustment::factory()->for($source, 'sourceInvoice')->unapplied()->create(['amount' => 400]);
+
+    expect((float) $source->due_amount)->toBe(0.0);
+});
+
+test('a balance carried through a chain of invoices lands on the last one', function () {
+    $first = Invoice::factory()->create();
+    $second = Invoice::factory()->create();
+    $third = Invoice::factory()->create();
+    InvoiceItem::factory()->for($second)->create(['quantity' => 1, 'amount' => 300]);
+    Adjustment::factory()->for($first, 'sourceInvoice')->for($second, 'targetInvoice')->create(['amount' => 95]);
+    Adjustment::factory()->for($second, 'sourceInvoice')->for($third, 'targetInvoice')->create(['amount' => 395]);
+
+    expect($second->total_amount)->toBe(395.0);
+    expect((float) $second->due_amount)->toBe(0.0);
+    expect($third->total_amount)->toBe(395.0);
+    expect((float) $third->due_amount)->toBe(395.0);
+});
+
+test('paid amount is unaffected by adjustments', function () {
+    $invoice = Invoice::factory()->create();
+    InvoiceItem::factory()->for($invoice)->create(['amount' => 500]);
+    Payment::factory()->for($invoice)->paid()->create(['amount' => 200]);
+    Adjustment::factory()->for($invoice, 'sourceInvoice')->unapplied()->create(['amount' => 300]);
+
+    expect((float) $invoice->paid_amount)->toBe(200.0);
 });
 
 test('invoice casts status to enum', function () {

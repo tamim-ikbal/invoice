@@ -90,7 +90,7 @@ function submitEdit() {
         }),
         {
             preserveScroll: true,
-            only: ['items'],
+            only: ['items', 'invoice'],
             onSuccess: () => {
                 editOpen.value = false;
             },
@@ -117,7 +117,7 @@ function submitDelete() {
         }),
         {
             preserveScroll: true,
-            only: ['items'],
+            only: ['items', 'invoice'],
             onSuccess: () => {
                 deleteOpen.value = false;
             },

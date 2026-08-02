@@ -27,6 +27,34 @@ export type Payment = {
     bdt_rate: string | null;
 };
 
+export type AdjustmentDirection = 'in' | 'out';
+
+export type AdjustmentInvoice = {
+    id: number;
+    invoice_no: string | null;
+};
+
+export type Adjustment = {
+    id: number;
+    direction: AdjustmentDirection;
+    amount: string;
+    note: string | null;
+    invoice: AdjustmentInvoice | null;
+};
+
+export type PendingAdjustment = {
+    id: number;
+    amount: string;
+    note: string | null;
+    invoice: AdjustmentInvoice;
+};
+
+export type TargetInvoice = {
+    id: number;
+    invoice_no: string | null;
+    title: string;
+};
+
 export type InvoiceViewLog = {
     id: number;
     ip: string;
@@ -46,6 +74,9 @@ export type Invoice = {
     status: InvoiceStatus;
     date: string | null;
     client: { id: number; name: string } | null;
+    items_amount: string;
+    adjustment_in_amount: string;
+    adjustment_out_amount: string;
     total_amount: string;
     paid_amount: string;
     paid_bdt_amount: string;
