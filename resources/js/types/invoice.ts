@@ -119,3 +119,17 @@ export type Paginated<T> = {
         total: number;
     };
 };
+
+export type DashboardPeriod = '3m' | '6m' | '1y' | 'all';
+
+export type DashboardPeriodOption = {
+    value: DashboardPeriod;
+    label: string;
+};
+
+export type DashboardStats = {
+    total_usd: string;
+    total_bdt: string;
+    total_invoices: number;
+    total_clients: number;
+};
